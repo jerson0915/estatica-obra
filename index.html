@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Estática para construcción de obras civiles: unidades, vectores, composición de fuerzas y ecuaciones de equilibrio con simuladores interactivos y ejemplos de obra.">
+<meta name="author" content="Jerson Sinisterra">
+<link rel="canonical" href="https://jerson0915.github.io/estatica-obra/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Estática, del cuaderno a la obra">
+<meta property="og:description" content="Unidades, vectores, ecuaciones de equilibrio e izaje de vigas con simuladores interactivos y ejemplos de obra.">
+<meta property="og:url" content="https://jerson0915.github.io/estatica-obra/">
+<meta property="og:image" content="https://jerson0915.github.io/estatica-obra/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23d9590b'/%3E%3Cpath d='M16 6 L7 20 M16 6 L25 20' stroke='%23fff' stroke-width='3'/%3E%3Crect x='4' y='20' width='24' height='6' fill='%23fff'/%3E%3C/svg%3E">
+<style>[hidden]{display:none!important} body{margin:0}</style>
+<title>Estática en la obra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: cuaderno de obra cuadriculado — una ruta de 6 estaciones, cada una con explicación + laboratorio interactivo + nota "en la obra" */
+:root{
+  --paper:#eef2f4; --panel:#ffffff; --ink:#15212b; --muted:#5a6873; --line:#c6d0d7; --grid:#dfe6ea;
+  --accent:#d9590b; --accent-soft:#fbe6d6; --concrete:#cdd5db;
+  --f1:#1f5fa8; --f2:#0f7f73; --f3:#8a4fb3; --ok:#2e7d4f; --warn:#a86b0c; --bad:#bf3326;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f151a; --panel:#161f26; --ink:#e4ebf0; --muted:#93a2ad; --line:#2d3a44; --grid:#1c262e;
+  --accent:#ff8a3d; --accent-soft:#3a2416; --concrete:#3a4750;
+  --f1:#6ea9f0; --f2:#4fcfbe; --f3:#c39ae8; --ok:#5cc58a; --warn:#e2b456; --bad:#f07264; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f151a; --panel:#161f26; --ink:#e4ebf0; --muted:#93a2ad; --line:#2d3a44; --grid:#1c262e;
+  --accent:#ff8a3d; --accent-soft:#3a2416; --concrete:#3a4750;
+  --f1:#6ea9f0; --f2:#4fcfbe; --f3:#c39ae8; --ok:#5cc58a; --warn:#e2b456; --bad:#f07264; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+main{max-width:1080px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.05}
+p{margin:0;max-width:68ch}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* hero */
+.hero{padding-block:40px 24px;display:grid;gap:14px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(44px,8vw,88px);letter-spacing:.01em;text-transform:uppercase}
+.hero h1 span{color:var(--accent)}
+.hero p{font-size:18px;color:var(--muted)}
+.route{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+.route a{display:flex;gap:8px;align-items:baseline;padding:6px 12px;border:1px solid var(--line);background:var(--panel);
+  color:var(--ink);text-decoration:none;font-weight:500;font-size:14px;border-radius:2px}
+.route a b{font-family:var(--mono);color:var(--accent);font-weight:500;font-size:12px}
+.route a:hover,.route a:focus-visible{border-color:var(--accent);outline:none}
+
+/* section */
+section{padding-block:36px;border-top:2px solid var(--ink);display:grid;gap:18px}
+.sec-head{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;align-items:end}
+.sec-num{font-family:var(--display);font-size:56px;color:var(--accent);line-height:.9;grid-row:span 2}
+.sec-head h2{font-size:clamp(28px,4vw,40px);text-transform:uppercase}
+.sec-tag{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.lead{font-size:17px}
+.lab{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:820px){.lab{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);padding:16px;min-width:0}
+.panel h3{font-size:20px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:10px}
+.svgbox{width:100%;height:auto;display:block}
+.obra{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:14px 16px;border-left:4px solid var(--accent);
+  background:var(--accent-soft)}
+.obra .k{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:15px;letter-spacing:.05em;color:var(--accent)}
+.obra p{font-size:15px}
+.fix{border:1px dashed var(--line);padding:12px 14px;font-size:15px;background:var(--panel)}
+.fix strong{color:var(--accent)}
+
+/* controls */
+.ctrls{display:grid;gap:12px}
+.ctrl{display:grid;gap:4px}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:500}
+.ctrl output{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.grp{display:grid;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.grp:first-child{border-top:0;padding-top:0}
+.grp-t{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:8px}
+.sw{width:14px;height:4px;display:inline-block}
+.seg{display:inline-flex;border:1px solid var(--line)}
+.seg button{font:inherit;font-size:14px;padding:6px 14px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.seg button:focus-visible,.chips button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select,input[type=number]{font:inherit;font-size:15px;padding:7px 8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:2px;width:100%;min-width:0}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:480px){.row3{grid-template-columns:minmax(0,1fr)}}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:inherit;font-size:13px;padding:5px 10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:2px}
+.chips button:hover{border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:14px}
+
+/* readouts */
+.big{font-family:var(--display);font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:20px;color:var(--muted);margin-left:6px}
+.calc{font-family:var(--mono);font-size:13px;line-height:1.7;overflow-x:auto;white-space:nowrap;color:var(--ink)}
+.calc .c{color:var(--muted);white-space:normal}
+.calc b{color:var(--accent);font-weight:500}
+table.t{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.tw{overflow-x:auto}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t th{font-weight:500;color:var(--muted);font-size:12px}
+table.t tr.sum td{font-weight:500;color:var(--accent);border-bottom:0}
+.pill{display:inline-block;padding:3px 10px;font-size:13px;font-weight:600;border:1.5px solid currentColor;border-radius:2px}
+.pill.ok{color:var(--ok)} .pill.warn{color:var(--warn)} .pill.bad{color:var(--bad)}
+.stack{display:grid;gap:12px}
+
+/* tree */
+.tree{display:grid;gap:8px}
+.lvl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lvl .arr{font-family:var(--mono);color:var(--muted);width:22px}
+.node{padding:4px 10px;border:1px solid var(--line);font-size:14px;color:var(--muted);background:var(--paper)}
+.node.on{border-color:var(--ink);color:var(--ink);font-weight:600;background:var(--panel)}
+.node.star{border-color:var(--accent);background:var(--accent);color:#fff}
+
+/* svg classes */
+svg text{font-family:var(--mono);font-size:12px;fill:var(--ink)}
+svg text.m{fill:var(--muted)}
+svg text.big{font-size:15px;font-weight:500}
+.stroke{fill:none;stroke-linecap:round}
+.fill{stroke:none}
+.c1.stroke{stroke:var(--f1)} .c1.fill{fill:var(--f1)}
+.c2.stroke{stroke:var(--f2)} .c2.fill{fill:var(--f2)}
+.c3.stroke{stroke:var(--f3)} .c3.fill{fill:var(--f3)}
+.cr.stroke{stroke:var(--accent)} .cr.fill{fill:var(--accent)}
+.ce.stroke{stroke:var(--ok)} .ce.fill{fill:var(--ok)}
+.cg.stroke{stroke:var(--muted)} .cg.fill{fill:var(--muted)}
+.ci.stroke{stroke:var(--ink)} .ci.fill{fill:var(--ink)}
+.dash{stroke-dasharray:5 5}
+.faint{opacity:.35}
+.gridl{stroke:var(--grid);stroke-width:1}
+.axis{stroke:var(--line);stroke-width:1.5}
+.beam{fill:var(--concrete);stroke:var(--ink);stroke-width:1.5}
+.sup{fill:var(--panel);stroke:var(--ink);stroke-width:1.5}
+.gnd{stroke:var(--muted);stroke-width:1}
+.box{fill:var(--concrete);stroke:var(--ink);stroke-width:1.5}
+
+details{border:1px solid var(--line);background:var(--panel);padding:10px 14px}
+details summary{cursor:pointer;font-weight:600}
+details p{margin-top:6px;font-size:15px}
+.retos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.retos{grid-template-columns:minmax(0,1fr)}}
+footer{padding-top:24px;color:var(--muted);font-size:13px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+  <div class="eyebrow">Apuntes de clase · 30/10/26 · Construcción de obras civiles</div>
+  <h1>Estática, <span>del cuaderno a la obra</span></h1>
+  <p>Seis estaciones, una por cada tema de tus apuntes. En cada una mueves los controles, ves los números cambiar y al final encuentras dónde aparece eso en una obra real.</p>
+  <ol class="route">
+    <li><a href="#que-es"><b>1</b>Qué es estática</a></li>
+    <li><a href="#unidades"><b>2</b>Unidades y conversiones</a></li>
+    <li><a href="#vectores"><b>3</b>Suma y resta de vectores</a></li>
+    <li><a href="#composicion"><b>4</b>Composición de vectores</a></li>
+    <li><a href="#equilibrio"><b>5</b>Ecuaciones de equilibrio</a></li>
+    <li><a href="#obra"><b>6</b>Todo junto: izaje de una viga</a></li>
+  </ol>
+</header>
+
+<!-- 1 -->
+<section id="que-es">
+  <div class="sec-head"><div class="sec-num">1</div><h2>¿Qué es la estática?</h2><div class="sec-tag">Tema del cuaderno: "¿qué es estática?"</div></div>
+  <p class="lead">La estática estudia los cuerpos que <strong>no se mueven</strong> porque todas las fuerzas que actúan sobre ellos se cancelan. Si las fuerzas no se cancelan, el cuerpo se acelera y eso ya lo estudia la dinámica.</p>
+  <div class="fix">En el cuaderno quedó "la física se divide en mecánica y estática". <strong>Corrección:</strong> la estática no está al lado de la mecánica, está <em>dentro</em> de ella. Mira la ruta:</div>
+  <div class="lab">
+    <div class="panel">
+      <h3>Tira y afloja</h3>
+      <svg id="tug" class="svgbox" viewBox="0 0 600 170" role="img" aria-label="Bloque jalado por dos fuerzas opuestas"></svg>
+      <div class="ctrls" style="margin-top:10px">
+        <div class="ctrl"><label for="tugL">Obrero izquierdo jala <output id="tugLo"></output></label><input id="tugL" type="range" min="0" max="100" value="60"></div>
+        <div class="ctrl"><label for="tugR">Obrero derecho jala <output id="tugRo"></output></label><input id="tugR" type="range" min="0" max="100" value="60"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Dónde queda la estática</h3>
+      <div class="tree">
+        <div class="lvl"><span class="arr">▸</span><span class="node on">Física</span></div>
+        <div class="lvl"><span class="arr">└</span><span class="node on">Mecánica</span><span class="node">Termodinámica</span><span class="node">Electromagnetismo</span><span class="node">Óptica</span></div>
+        <div class="lvl"><span class="arr">&nbsp;└</span><span class="node on">Cuerpos rígidos</span><span class="node">Cuerpos deformables</span><span class="node">Fluidos</span></div>
+        <div class="lvl"><span class="arr">&nbsp;&nbsp;└</span><span class="node star">Estática (reposo)</span><span class="node">Dinámica (movimiento)</span></div>
+      </div>
+      <p style="margin-top:12px;font-size:15px;color:var(--muted)">"Cuerpos deformables" será tu siguiente materia: resistencia de materiales. Primero se calculan las fuerzas con estática; luego se revisa si el material las aguanta.</p>
+    </div>
+  </div>
+  <div class="obra"><span class="k">En la obra</span><p>Una casa, un puente o un muro de contención están diseñados para quedarse quietos. Todo cálculo estructural arranca con la pregunta de la estática: ¿las fuerzas se cancelan?</p></div>
+</section>
+
+<!-- 2 -->
+<section id="unidades">
+  <div class="sec-head"><div class="sec-num">2</div><h2>Unidades y conversiones</h2><div class="sec-tag">Temas: sistema internacional e inglés · conversiones de unidades</div></div>
+  <p class="lead">En Colombia la norma (NSR-10) usa el Sistema Internacional: metros, kilonewtons, megapascales. Pero en la ferretería y en la obra se sigue hablando en pulgadas, libras y psi. Convertir es multiplicar por un factor.</p>
+  <div class="lab">
+    <div class="panel stack">
+      <h3>Convertidor</h3>
+      <div class="row3">
+        <div class="ctrl"><label for="cvCat">Magnitud</label><select id="cvCat"><option value="longitud">Longitud</option><option value="fuerza">Fuerza</option><option value="masa">Masa</option><option value="presion">Presión / esfuerzo</option></select></div>
+        <div class="ctrl"><label for="cvFrom">De</label><select id="cvFrom"></select></div>
+        <div class="ctrl"><label for="cvTo">A</label><select id="cvTo"></select></div>
+      </div>
+      <div class="ctrl"><label for="cvVal">Valor</label><input id="cvVal" type="number" step="any" value="0.5"></div>
+      <div class="big" id="cvOut"></div>
+      <div class="calc" id="cvCalc"></div>
+      <div><div class="eyebrow" style="margin-bottom:6px">Casos de obra</div>
+        <div class="chips" id="cvEx"></div></div>
+    </div>
+    <div class="panel">
+      <h3>Factores que vas a usar siempre</h3>
+      <div class="tw"><table class="t">
+        <tr><th>Inglés</th><th>Internacional (SI)</th></tr>
+        <tr><td>1 pulgada (in)</td><td>2,54 cm</td></tr>
+        <tr><td>1 pie (ft)</td><td>0,3048 m</td></tr>
+        <tr><td>1 libra masa (lb)</td><td>0,4536 kg</td></tr>
+        <tr><td>1 libra fuerza (lbf)</td><td>4,448 N</td></tr>
+        <tr><td>1 kip (1000 lbf)</td><td>4,448 kN</td></tr>
+        <tr><td>1 psi</td><td>6,895 kPa</td></tr>
+        <tr><td>1 kgf</td><td>9,807 N</td></tr>
+      </table></div>
+      <p style="margin-top:10px;font-size:14px;color:var(--muted)">Ojo con la diferencia entre masa (kg) y fuerza (N). Un bulto de 50 kg pesa 50 × 9,81 ≈ 490 N.</p>
+    </div>
+  </div>
+  <div class="obra"><span class="k">En la obra</span><p>Pides "varilla de media" (1/2 pulgada = 12,7 mm), "concreto de 3000" (3000 psi ≈ 21 MPa) o "tablones de 2×4" (pulgadas). Los planos estructurales te dan todo en mm, kN y MPa. Tú haces el puente entre los dos.</p></div>
+</section>
+
+<!-- 3 -->
+<section id="vectores">
+  <div class="sec-head"><div class="sec-num">3</div><h2>Suma y resta de vectores</h2><div class="sec-tag">Tema: operaciones con vectores (suma y resta)</div></div>
+  <p class="lead">Una fuerza tiene tamaño y dirección, así que 60 N + 45 N casi nunca da 105 N. El truco: partir cada fuerza en su parte horizontal (x) y vertical (y), sumar las x con las x y las y con las y.</p>
+  <div class="lab">
+    <div class="panel">
+      <svg id="vec" class="svgbox" viewBox="-210 -210 420 420" role="img" aria-label="Plano con dos vectores y su resultante"></svg>
+    </div>
+    <div class="panel stack">
+      <div class="seg" role="group" aria-label="Operación"><button id="opSum" aria-pressed="true">F₁ + F₂</button><button id="opRes" aria-pressed="false">F₁ − F₂</button></div>
+      <div class="ctrls">
+        <div class="grp"><div class="grp-t"><span class="sw" style="background:var(--f1)"></span>Fuerza F₁</div>
+          <div class="ctrl"><label for="v1m">Magnitud <output id="v1mo"></output></label><input id="v1m" type="range" min="0" max="100" value="60"></div>
+          <div class="ctrl"><label for="v1a">Ángulo <output id="v1ao"></output></label><input id="v1a" type="range" min="0" max="360" value="30"></div></div>
+        <div class="grp"><div class="grp-t"><span class="sw" style="background:var(--f2)"></span>Fuerza F₂</div>
+          <div class="ctrl"><label for="v2m">Magnitud <output id="v2mo"></output></label><input id="v2m" type="range" min="0" max="100" value="45"></div>
+          <div class="ctrl"><label for="v2a">Ángulo <output id="v2ao"></output></label><input id="v2a" type="range" min="0" max="360" value="120"></div></div>
+      </div>
+      <div class="tw"><table class="t" id="vecT"></table></div>
+      <div class="calc" id="vecCalc"></div>
+    </div>
+  </div>
+  <div class="obra"><span class="k">En la obra</span><p>Restar sirve para comparar: la fuerza que el viento mete contra una cubierta menos la que aguanta el anclaje te dice cuánto falta. Sumar sirve para juntar cargas: el peso de un tanque elevado más el empuje lateral del viento sobre la torre.</p></div>
+</section>
+
+<!-- 4 -->
+<section id="composicion">
+  <div class="sec-head"><div class="sec-num">4</div><h2>Composición de vectores</h2><div class="sec-tag">Tema: composición de vectores (resultante)</div></div>
+  <p class="lead">Componer es reemplazar varias fuerzas por una sola que hace el mismo efecto: la <strong>resultante R</strong>. Y la fuerza igual y opuesta a R, la <strong>equilibrante</strong>, es la que deja todo quieto. Vista desde arriba: un poste con tres tensores (vientos) jalando en distintas direcciones.</p>
+  <div class="lab">
+    <div class="panel">
+      <svg id="comp" class="svgbox" viewBox="-250 -250 500 500" role="img" aria-label="Tres fuerzas sobre un poste, su resultante y su equilibrante"></svg>
+    </div>
+    <div class="panel stack">
+      <div class="ctrls" id="compCtrls"></div>
+      <label class="check"><input type="checkbox" id="compEq"> Mostrar la equilibrante (−R)</label>
+      <div class="tw"><table class="t" id="compT"></table></div>
+      <div id="compMsg" style="font-size:15px"></div>
+    </div>
+  </div>
+  <div class="obra"><span class="k">En la obra</span><p>Los postes de energía, las torres de comunicación y los andamios altos llevan vientos (cables tensores). El instalador los reparte para que la resultante sobre el poste sea casi cero; si un viento se afloja, la resultante deja de ser cero y el poste se inclina hacia el lado contrario.</p></div>
+</section>
+
+<!-- 5 -->
+<section id="equilibrio">
+  <div class="sec-head"><div class="sec-num">5</div><h2>Ecuaciones de equilibrio</h2><div class="sec-tag">Tema: ecuaciones de equilibrio · ΣFx = 0 · ΣFy = 0 · ΣM = 0</div></div>
+  <p class="lead">Un cuerpo está en equilibrio si se cumplen tres condiciones: no lo empujan hacia los lados (ΣFx = 0), no lo empujan arriba ni abajo (ΣFy = 0) y no lo hacen girar (ΣM = 0). Con eso calculamos cuánto tiene que aguantar cada apoyo de una viga.</p>
+  <div class="lab">
+    <div class="panel">
+      <h3>Viga de concreto sobre dos apoyos</h3>
+      <svg id="beam" class="svgbox" viewBox="0 0 640 300" role="img" aria-label="Viga simplemente apoyada con carga puntual y carga repartida"></svg>
+    </div>
+    <div class="panel stack">
+      <div class="ctrls">
+        <div class="ctrl"><label for="bL">Luz de la viga L <output id="bLo"></output></label><input id="bL" type="range" min="3" max="8" step="0.5" value="6"></div>
+        <div class="ctrl"><label for="bP">Carga puntual P (una columna, un tanque) <output id="bPo"></output></label><input id="bP" type="range" min="0" max="50" step="1" value="20"></div>
+        <div class="ctrl"><label for="ba">Posición de P desde A <output id="bao"></output></label><input id="ba" type="range" min="0" max="100" value="33"></div>
+        <div class="ctrl"><label for="bw">Carga repartida w (losa, muros) <output id="bwo"></output></label><input id="bw" type="range" min="0" max="20" step="0.5" value="8"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Cálculo paso a paso</h3>
+    <div class="calc" id="beamCalc"></div>
+  </div>
+  <div class="obra"><span class="k">En la obra</span><p>Las reacciones R<sub>A</sub> y R<sub>B</sub> son lo que la viga le entrega a cada columna. Con ese número se diseña la columna y, al final, la zapata. Si mueves la carga P hacia un apoyo, ese apoyo carga más: por eso una columna pegada a un tanque de agua necesita más refuerzo.</p></div>
+</section>
+
+<!-- 6 -->
+<section id="obra">
+  <div class="sec-head"><div class="sec-num">6</div><h2>Todo junto: izar una viga</h2><div class="sec-tag">Unidades + vectores + composición + equilibrio en una sola maniobra</div></div>
+  <p class="lead">Una grúa levanta una viga prefabricada con dos eslingas. ¿Cuánto tiene que aguantar cada eslinga? Cambia el ángulo y mira lo que pasa: entre más abiertas las eslingas, más tensión, aunque la viga pese lo mismo.</p>
+  <div class="lab">
+    <div class="panel">
+      <svg id="lift" class="svgbox" viewBox="0 0 640 340" role="img" aria-label="Grúa izando una viga con dos eslingas"></svg>
+    </div>
+    <div class="panel stack">
+      <div class="ctrls">
+        <div class="ctrl"><label for="lL">Largo de la viga <output id="lLo"></output></label><input id="lL" type="range" min="2" max="10" step="0.5" value="6"></div>
+        <div class="ctrl"><label for="lb">Ancho b <output id="lbo"></output></label><input id="lb" type="range" min="20" max="50" step="5" value="30"></div>
+        <div class="ctrl"><label for="lh">Alto h <output id="lho"></output></label><input id="lh" type="range" min="30" max="80" step="5" value="50"></div>
+        <div class="ctrl"><label for="lt">Ángulo de la eslinga con la horizontal θ <output id="lto"></output></label><input id="lt" type="range" min="15" max="90" step="1" value="60"></div>
+      </div>
+      <div id="liftStatus"></div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap">
+        <div><div class="eyebrow">Peso W</div><div class="big" id="liftW"></div></div>
+        <div><div class="eyebrow">Tensión en cada eslinga T</div><div class="big" id="liftT" style="color:var(--accent)"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="lab">
+    <div class="panel">
+      <h3>Diagrama de cuerpo libre del gancho</h3>
+      <svg id="fbd" class="svgbox" viewBox="0 0 360 245" role="img" aria-label="Fuerzas sobre el gancho"></svg>
+    </div>
+    <div class="panel">
+      <h3>Cálculo</h3>
+      <div class="calc" id="liftCalc"></div>
+    </div>
+  </div>
+  <div class="obra"><span class="k">En la obra</span><p>Esta es la razón de la regla de los aparejadores: no abrir las eslingas de más. Las guías de izaje suelen recomendar trabajar cerca de 60° y no bajar de 30°, porque a 30° cada eslinga ya carga el peso completo de la viga, y por debajo la tensión se dispara. La compresión horizontal (T·cos θ) además aprieta la viga de punta a punta.</p></div>
+</section>
+
+<!-- retos -->
+<section id="retos">
+  <div class="sec-head"><div class="sec-num">✎</div><h2>Practica</h2><div class="sec-tag">Resuélvelos en el cuaderno y comprueba con los simuladores de arriba</div></div>
+  <div class="retos">
+    <details><summary>Convierte una varilla de 5/8 de pulgada a milímetros.</summary><p>5/8 = 0,625 in × 25,4 mm = <strong>15,875 mm</strong> (en obra se dice "varilla de 16 mm").</p></details>
+    <details><summary>F₁ = 50 N a 0° y F₂ = 50 N a 90°. ¿Cuál es la resultante?</summary><p>Rx = 50, Ry = 50 → R = √(50² + 50²) = <strong>70,71 N a 45°</strong>. Ponlo en la estación 3 y compruébalo.</p></details>
+    <details><summary>Viga de 4 m con una carga de 10 kN en el centro, sin carga repartida. ¿R<sub>A</sub> y R<sub>B</sub>?</summary><p>ΣM<sub>A</sub>: R<sub>B</sub>·4 = 10·2 → R<sub>B</sub> = 5 kN. ΣFy: R<sub>A</sub> = 10 − 5 = <strong>5 kN cada una</strong>. Carga centrada, reparto mitad y mitad.</p></details>
+    <details><summary>Una viga de 20 kN se iza con eslingas a 30°. ¿Cuánto carga cada eslinga?</summary><p>T = W / (2·sen 30°) = 20 / (2·0,5) = <strong>20 kN cada una</strong>. Cada eslinga carga todo el peso, aunque sean dos.</p></details>
+  </div>
+  <footer>Simulador de estudio. Los valores de obra (peso del concreto 24 kN/m³, ángulos de izaje) son de referencia para aprender; en una obra real manda el diseño del ingeniero y el plan de izaje.</footer>
+</section>
+</main>
+
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function txt(g,x,y,s,cls,anchor){const t=el('text',{x,y,'text-anchor':anchor||'start'},g);if(cls)t.setAttribute('class',cls);t.textContent=s;return t;}
+function arrow(g,x1,y1,x2,y2,cls,w,head,extra){
+  w=w||2.5;head=head||10;const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy);if(L<0.5)return;
+  const ux=dx/L,uy=dy/L,h=Math.min(head,L*0.6),bx=x2-ux*h,by=y2-uy*h;
+  el('line',{x1,y1,x2:bx,y2:by,class:cls+' stroke'+(extra?' '+extra:''),'stroke-width':w},g);
+  el('polygon',{points:`${x2},${y2} ${bx-uy*h*.45},${by+ux*h*.45} ${bx+uy*h*.45},${by-ux*h*.45}`,class:cls+' fill'+(extra&&extra.includes('faint')?' faint':'')},g);
+}
+const fmt=(v,d=2)=>(Math.abs(v)<5e-10?0:v).toLocaleString('es-CO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtN=v=>{const a=Math.abs(v);const d=a>=1000?1:a>=1?3:6;return (+v.toPrecision(8)).toLocaleString('es-CO',{maximumFractionDigits:d});};
+const rad=d=>d*Math.PI/180, deg=r=>r*180/Math.PI;
+const ang360=(x,y)=>{let a=deg(Math.atan2(y,x));if(a<0)a+=360;return a;};
+function bind(ids,fn){ids.forEach(i=>$(i).addEventListener('input',fn));}
+
+/* 1 · tira y afloja */
+function drawTug(){
+  const L=+$('tugL').value,R=+$('tugR').value;$('tugLo').textContent=L+' N';$('tugRo').textContent=R+' N';
+  const s=$('tug');s.innerHTML='';
+  el('line',{x1:20,y1:120,x2:580,y2:120,class:'gnd'},s);
+  for(let x=20;x<580;x+=14)el('line',{x1:x,y1:120,x2:x-8,y2:130,class:'gnd'},s);
+  el('rect',{x:260,y:70,width:80,height:50,class:'box'},s);txt(s,300,100,'bloque','m','middle');
+  arrow(s,260,95,260-L*1.9,95,'c1',3,12);txt(s,Math.max(30,260-L*1.9),82,L+' N','c1 fill','start');
+  arrow(s,340,95,340+R*1.9,95,'c2',3,12);txt(s,Math.min(570,340+R*1.9),82,R+' N','c2 fill','end');
+  const net=R-L;const t=el('text',{x:300,y:156,'text-anchor':'middle',class:'big'},s);
+  if(net===0){t.textContent='ΣF = 0 → no se mueve: ESTÁTICA';t.setAttribute('class','big ce fill');}
+  else{t.textContent=`ΣF = ${Math.abs(net)} N hacia la ${net>0?'derecha':'izquierda'} → se acelera: DINÁMICA`;t.setAttribute('class','big cr fill');}
+}
+bind(['tugL','tugR'],drawTug);
+
+/* 2 · conversiones */
+const U={
+  longitud:{m:1,cm:.01,mm:.001,'pie (ft)':.3048,'pulgada (in)':.0254},
+  fuerza:{N:1,kN:1000,kgf:9.80665,lbf:4.4482216,kip:4448.2216},
+  masa:{kg:1,'t (tonelada)':1000,lb:.45359237},
+  presion:{Pa:1,kPa:1000,MPa:1e6,psi:6894.757,'kgf/cm²':98066.5}
+};
+const EX=[
+  ['Varilla de 1/2" a mm','longitud','pulgada (in)','mm',0.5],
+  ['Concreto 3000 psi a MPa','presion','psi','MPa',3000],
+  ['Bulto de cemento 50 kg a lb','masa','kg','lb',50],
+  ['Tablón de 3 m a pies','longitud','m','pie (ft)',3],
+  ['1000 kgf a kN','fuerza','kgf','kN',1000],
+  ['Acero fy 60 000 psi a MPa','presion','psi','MPa',60000]
+];
+function fillUnits(c,f,t){const ks=Object.keys(U[c]);[$('cvFrom'),$('cvTo')].forEach((s,i)=>{s.innerHTML='';ks.forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;s.appendChild(o);});s.value=(i?t:f)||ks[i?2:0]||ks[0];});}
+function conv(){
+  const c=$('cvCat').value,f=$('cvFrom').value,t=$('cvTo').value,v=parseFloat($('cvVal').value);
+  if(isNaN(v)){$('cvOut').textContent='—';$('cvCalc').textContent='Escribe un número para convertir.';return;}
+  const k=U[c][f]/U[c][t],r=v*k;
+  $('cvOut').innerHTML=`${fmtN(r)}<small>${t}</small>`;
+  $('cvCalc').innerHTML=`<span class="c">1 ${f} = ${fmtN(k)} ${t}</span><br>${fmtN(v)} ${f} × ${fmtN(k)} = <b>${fmtN(r)} ${t}</b>`;
+}
+$('cvCat').addEventListener('change',()=>{fillUnits($('cvCat').value);conv();});
+['cvFrom','cvTo'].forEach(i=>$(i).addEventListener('change',conv));$('cvVal').addEventListener('input',conv);
+EX.forEach(e=>{const b=document.createElement('button');b.type='button';b.textContent=e[0];b.onclick=()=>{$('cvCat').value=e[1];fillUnits(e[1],e[2],e[3]);$('cvVal').value=e[4];conv();};$('cvEx').appendChild(b);});
+
+/* plano cartesiano */
+function plane(svg,R){
+  svg.innerHTML='';const g=el('g',{},svg);
+  for(let v=-Math.floor(R/50)*50;v<=R;v+=50){el('line',{x1:v,y1:-R,x2:v,y2:R,class:'gridl'},g);el('line',{x1:-R,y1:v,x2:R,y2:v,class:'gridl'},g);}
+  el('line',{x1:-R,y1:0,x2:R,y2:0,class:'axis'},g);el('line',{x1:0,y1:-R,x2:0,y2:R,class:'axis'},g);
+  txt(g,R-6,-6,'x','m','end');txt(g,6,-R+14,'y','m');
+  txt(g,-R+4,R-6,'cuadrícula = 50 N','m');
+  return g;
+}
+
+/* 3 · suma y resta */
+let op='suma';
+function setOp(o){op=o;$('opSum').setAttribute('aria-pressed',o==='suma');$('opRes').setAttribute('aria-pressed',o==='resta');drawVec();}
+$('opSum').onclick=()=>setOp('suma');$('opRes').onclick=()=>setOp('resta');
+function drawVec(){
+  const m1=+$('v1m').value,a1=+$('v1a').value,m2=+$('v2m').value,a2=+$('v2a').value;
+  $('v1mo').textContent=m1+' N';$('v1ao').textContent=a1+'°';$('v2mo').textContent=m2+' N';$('v2ao').textContent=a2+'°';
+  const x1=m1*Math.cos(rad(a1)),y1=m1*Math.sin(rad(a1)),x2=m2*Math.cos(rad(a2)),y2=m2*Math.sin(rad(a2));
+  const s=op==='suma'?1:-1,rx=x1+s*x2,ry=y1+s*y2,R=Math.hypot(rx,ry),aR=ang360(rx,ry);
+  const svg=$('vec');const g=plane(svg,210);
+  // componentes de F1 punteadas
+  el('line',{x1:0,y1:0,x2:x1,y2:0,class:'c1 stroke dash','stroke-width':1.5},g);
+  el('line',{x1:x1,y1:0,x2:x1,y2:-y1,class:'c1 stroke dash','stroke-width':1.5},g);
+  arrow(g,0,0,x2,-y2,'c2',2,9,'faint');
+  arrow(g,0,0,x1,-y1,'c1',3);
+  arrow(g,x1,-y1,x1+s*x2,-(y1+s*y2),'c2',3);
+  arrow(g,0,0,rx,-ry,'cr',4,13);
+  txt(g,x1/2+6,-y1/2-6,'F₁','c1 fill big');
+  txt(g,x1+s*x2/2+6,-(y1+s*y2/2)-6,s>0?'F₂':'−F₂','c2 fill big');
+  if(R>4)txt(g,rx+(rx>=0?8:-8),-ry+(ry>=0?-6:16),'R','cr fill big',rx>=0?'start':'end');
+  const sg=s>0?'+':'−';
+  $('vecT').innerHTML=`<tr><th></th><th>x (N)</th><th>y (N)</th></tr>
+   <tr><td>F₁</td><td>${fmt(x1)}</td><td>${fmt(y1)}</td></tr>
+   <tr><td>${s>0?'F₂':'−F₂'}</td><td>${fmt(s*x2)}</td><td>${fmt(s*y2)}</td></tr>
+   <tr class="sum"><td>R</td><td>${fmt(rx)}</td><td>${fmt(ry)}</td></tr>`;
+  $('vecCalc').innerHTML=`<span class="c">componentes: Fx = F·cos θ, Fy = F·sen θ</span><br>
+   F₁x = ${m1}·cos ${a1}° = ${fmt(x1)}<br>
+   R = √(${fmt(rx)}² + ${fmt(ry)}²) = <b>${fmt(R)} N</b><br>
+   θ<sub>R</sub> = atan(Ry / Rx) = <b>${fmt(aR,1)}°</b><br>
+   <span class="c">suma "a ciegas": ${m1} ${sg} ${m2} = ${s>0?m1+m2:m1-m2} N ≠ ${fmt(R)} N</span>`;
+}
+bind(['v1m','v1a','v2m','v2a'],drawVec);
+
+/* 4 · composición */
+const CF=[{n:'Tensor A',c:'c1',col:'--f1',m:70,a:20},{n:'Tensor B',c:'c2',col:'--f2',m:60,a:150},{n:'Tensor C',c:'c3',col:'--f3',m:55,a:255}];
+CF.forEach((f,i)=>{
+  const d=document.createElement('div');d.className='grp';
+  d.innerHTML=`<div class="grp-t"><span class="sw" style="background:var(${f.col})"></span>${f.n}</div>
+  <div class="ctrl"><label for="cm${i}">Tensión <output id="cm${i}o"></output></label><input id="cm${i}" type="range" min="0" max="80" value="${f.m}"></div>
+  <div class="ctrl"><label for="ca${i}">Dirección <output id="ca${i}o"></output></label><input id="ca${i}" type="range" min="0" max="360" value="${f.a}"></div>`;
+  $('compCtrls').appendChild(d);
+});
+function drawComp(){
+  let sx=0,sy=0;const rows=[];
+  const svg=$('comp');const g=plane(svg,250);
+  // poste
+  const pts=[];
+  CF.forEach((f,i)=>{f.m=+$('cm'+i).value;f.a=+$('ca'+i).value;$('cm'+i+'o').textContent=f.m+' N';$('ca'+i+'o').textContent=f.a+'°';
+    const x=f.m*Math.cos(rad(f.a)),y=f.m*Math.sin(rad(f.a));pts.push([x,y]);sx+=x;sy+=y;rows.push([f.n,x,y]);});
+  // polígono de fuerzas (cabeza con cola)
+  let cx=0,cy=0;CF.forEach((f,i)=>{const [x,y]=pts[i];arrow(g,cx,-cy,cx+x,-(cy+y),f.c,1.5,8,'faint');cx+=x;cy+=y;});
+  CF.forEach((f,i)=>{const [x,y]=pts[i];arrow(g,0,0,x,-y,f.c,3);if(f.m>8)txt(g,x*1.08+(x>=0?4:-4),-y*1.08+4,f.n.slice(-1),f.c+' fill big',x>=0?'start':'end');});
+  const R=Math.hypot(sx,sy),aR=ang360(sx,sy);
+  arrow(g,0,0,sx,-sy,'cr',4,13);if(R>6)txt(g,sx+(sx>=0?8:-8),-sy+(sy>=0?-6:16),'R','cr fill big',sx>=0?'start':'end');
+  const showE=$('compEq').checked;
+  if(showE&&R>1){arrow(g,0,0,-sx,sy,'ce',3,12,'dash');txt(g,-sx+(sx<=0?8:-8),sy+(sy<=0?-6:16),'E = −R','ce fill big',sx<=0?'start':'end');}
+  el('circle',{cx:0,cy:0,r:9,class:'sup'},g);
+  let h='<tr><th></th><th>x (N)</th><th>y (N)</th></tr>';
+  rows.forEach(r=>h+=`<tr><td>${r[0]}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td></tr>`);
+  h+=`<tr class="sum"><td>R = Σ</td><td>${fmt(sx)}</td><td>${fmt(sy)}</td></tr>`;
+  $('compT').innerHTML=h;
+  $('compMsg').innerHTML=R<3?`<span class="pill ok">Poste en equilibrio</span> La resultante es casi cero (${fmt(R,1)} N).`
+   :`<span class="pill warn">Resultante ${fmt(R,1)} N a ${fmt(aR,0)}°</span> El poste tiende a inclinarse hacia ${fmt(aR,0)}°. ${showE?`Un cuarto tensor de ${fmt(R,1)} N a ${fmt((aR+180)%360,0)}° lo equilibra.`:'Activa la equilibrante para ver qué fuerza lo compensa.'}`;
+}
+bind(['cm0','ca0','cm1','ca1','cm2','ca2','compEq'],drawComp);
+
+/* 5 · viga */
+function drawBeam(){
+  const L=+$('bL').value,P=+$('bP').value,a=+$('ba').value/100*L,w=+$('bw').value;
+  $('bLo').textContent=fmt(L,1)+' m';$('bPo').textContent=P+' kN';$('bao').textContent=fmt(a,2)+' m';$('bwo').textContent=fmt(w,1)+' kN/m';
+  const W=w*L,RB=(P*a+W*L/2)/L,RA=P+W-RB;
+  const s=$('beam');s.innerHTML='';
+  const x0=60,x1=580,yb=150,px=v=>x0+v/L*(x1-x0);
+  // carga repartida
+  if(w>0){const top=118-w*2.4;el('line',{x1:x0,y1:top,x2:x1,y2:top,class:'c2 stroke','stroke-width':1.5},s);
+    for(let x=x0;x<=x1+0.1;x+=(x1-x0)/16)arrow(s,x,top,x,yb-2,'c2',1.5,7);
+    txt(s,x1,top-8,`w = ${fmt(w,1)} kN/m`,'c2 fill','end');}
+  // viga
+  el('rect',{x:x0-10,y:yb,width:x1-x0+20,height:18,class:'beam'},s);
+  // apoyos
+  el('polygon',{points:`${x0},${yb+18} ${x0-14},${yb+42} ${x0+14},${yb+42}`,class:'sup'},s);
+  el('circle',{cx:x1,cy:yb+30,r:11,class:'sup'},s);
+  [x0,x1].forEach(x=>{el('line',{x1:x-22,y1:yb+43,x2:x+22,y2:yb+43,class:'gnd'},s);for(let i=-20;i<22;i+=7)el('line',{x1:x+i,y1:yb+43,x2:x+i-6,y2:yb+50,class:'gnd'},s);});
+  txt(s,x0,yb+66,'A','big','middle');txt(s,x1,yb+66,'B','big','middle');
+  // carga puntual
+  if(P>0){const xp=px(a);arrow(s,xp,20,xp,yb-2,'cr',4,14);txt(s,xp+(a/L>0.8?-8:8),34,`P = ${P} kN`,'cr fill big',a/L>0.8?'end':'start');}
+  // reacciones
+  const mx=Math.max(RA,RB,1);
+  [[x0,RA,'R_A'],[x1,RB,'R_B']].forEach(([x,R,n])=>{const len=18+52*R/mx;const xo=x+(x===x0?-34:34);
+    arrow(s,xo,yb+52+len,xo,yb+52-12,'c1',3.5,11);
+    txt(s,xo+(x===x0?10:-10),yb+52+len-2,`${n.replace('_','')} = ${fmt(R,2)} kN`,'c1 fill big',x===x0?'start':'end');});
+  // cota
+  el('line',{x1:x0,y1:yb-8,x2:x0,y2:yb-8,class:'gnd'},s);
+  $('beamCalc').innerHTML=
+   `<span class="c">1) La carga repartida se reemplaza por su resultante: W = w·L, ubicada en el centro (L/2).</span><br>
+    W = ${fmt(w,1)} kN/m × ${fmt(L,1)} m = <b>${fmt(W,2)} kN</b> a ${fmt(L/2,2)} m de A<br><br>
+    <span class="c">2) ΣM<sub>A</sub> = 0 (momentos alrededor de A; antihorario +). Así R<sub>A</sub> desaparece de la ecuación.</span><br>
+    R<sub>B</sub>·${fmt(L,1)} − ${P}·${fmt(a,2)} − ${fmt(W,2)}·${fmt(L/2,2)} = 0 → R<sub>B</sub> = <b>${fmt(RB,2)} kN</b><br><br>
+    <span class="c">3) ΣF<sub>y</sub> = 0 (arriba +)</span><br>
+    R<sub>A</sub> + ${fmt(RB,2)} − ${P} − ${fmt(W,2)} = 0 → R<sub>A</sub> = <b>${fmt(RA,2)} kN</b><br><br>
+    <span class="c">4) ΣF<sub>x</sub> = 0: no hay cargas horizontales, así que A<sub>x</sub> = 0.</span><br>
+    <span class="c">Comprobación: R<sub>A</sub> + R<sub>B</sub> = ${fmt(RA+RB,2)} kN = P + W = ${fmt(P+W,2)} kN ✓</span>`;
+}
+bind(['bL','bP','ba','bw'],drawBeam);
+
+/* 6 · izaje */
+function drawLift(){
+  const L=+$('lL').value,b=+$('lb').value,h=+$('lh').value,th=+$('lt').value;
+  $('lLo').textContent=fmt(L,1)+' m';$('lbo').textContent=b+' cm';$('lho').textContent=h+' cm';$('lto').textContent=th+'°';
+  const gamma=24,V=L*b/100*h/100,W=gamma*V,sn=Math.sin(rad(th)),cs=Math.cos(rad(th)),T=W/(2*sn),H=T*cs,tW=W/9.80665,tT=T/9.80665;
+  $('liftW').innerHTML=`${fmt(W,1)}<small>kN ≈ ${fmt(tW,2)} t</small>`;
+  $('liftT').innerHTML=`${fmt(T,1)}<small>kN ≈ ${fmt(tT,2)} t</small>`;
+  let st;if(th>=60)st=['ok','Ángulo recomendado'];else if(th>=45)st=['warn','Aceptable, con cuidado'];else if(th>=30)st=['warn','Precaución: tensión alta'];else st=['bad','Evitar: tensión excesiva'];
+  $('liftStatus').innerHTML=`<span class="pill ${st[0]}">${st[1]}</span> <span style="font-size:14px;color:var(--muted)">cada eslinga carga ${fmt(1/(2*sn),2)} veces el peso de la viga</span>`;
+  // dibujo
+  const s=$('lift');s.innerHTML='';const hx=320,hy=44,S=220,d=Math.max(8,S*cs),yb=hy+S*sn;
+  el('line',{x1:hx,y1:0,x2:hx,y2:hy-10,class:'ci stroke','stroke-width':2.5},s);
+  el('path',{d:`M${hx} ${hy-10} q 10 4 8 12 q -2 8 -8 6`,class:'ci stroke','stroke-width':2.5},s);
+  txt(s,hx+14,16,'cable de la grúa','m');
+  el('line',{x1:hx,y1:hy,x2:hx-d,y2:yb,class:'cr stroke','stroke-width':3},s);
+  el('line',{x1:hx,y1:hy,x2:hx+d,y2:yb,class:'cr stroke','stroke-width':3},s);
+  const bw=Math.min(560,Math.max(2*d+60,120+L*44));
+  el('rect',{x:hx-bw/2,y:yb,width:bw,height:12+h*0.28,class:'beam'},s);
+  txt(s,hx,yb+12+h*0.28+18,`viga ${fmt(L,1)} m · ${b}×${h} cm`,'m','middle');
+  // ángulo
+  if(th<88){const r=46;const p0=[hx+d-r,yb],p1=[hx+d-r*cs,yb-r*sn];
+    el('path',{d:`M${p0[0]} ${p0[1]} A ${r} ${r} 0 0 1 ${p1[0]} ${p1[1]}`,class:'cg stroke','stroke-width':1.5},s);
+    el('line',{x1:hx+d-r-14,y1:yb,x2:hx+d,y2:yb,class:'cg stroke dash','stroke-width':1},s);
+    txt(s,hx+d-r-8,yb-10,'θ','big','end');}
+  txt(s,hx-d/2-10,hy+(yb-hy)/2,'T','cr fill big','end');txt(s,hx+d/2+10,hy+(yb-hy)/2,'T','cr fill big');
+  // DCL
+  const f=$('fbd');f.innerHTML='';const cx=180,cy=95,k=70/W;
+  arrow(f,cx,cy,cx,cy-60,'c1',3,11);txt(f,cx+8,cy-50,`W = ${fmt(W,1)} kN`,'c1 fill');
+  const tl=T*k,tx=tl*cs,ty=tl*sn;
+  [-1,1].forEach(sg=>{arrow(f,cx,cy,cx+sg*tx,cy+ty,'cr',3,11);
+    el('line',{x1:cx,y1:cy+ty,x2:cx+sg*tx,y2:cy+ty,class:'cg stroke dash','stroke-width':1},f);
+    el('line',{x1:cx+sg*tx,y1:cy,x2:cx+sg*tx,y2:cy+ty,class:'cg stroke dash','stroke-width':1},f);});
+  txt(f,cx+tx+8,cy+ty+(ty<20?16:4),`T = ${fmt(T,1)} kN`,'cr fill',cx+tx+100>355?'end':'start');
+  el('circle',{cx,cy,r:5,class:'ci fill'},f);
+  txt(f,180,236,'punteadas: T·cos θ y T·sen θ','m','middle');
+  $('liftCalc').innerHTML=
+   `<span class="c">Unidades: volumen y peso (concreto reforzado ≈ 24 kN/m³)</span><br>
+    V = ${fmt(L,1)} × ${fmt(b/100,2)} × ${fmt(h/100,2)} = ${fmt(V,3)} m³<br>
+    W = 24 × ${fmt(V,3)} = <b>${fmt(W,2)} kN</b> (÷ 9,81 = ${fmt(tW,2)} t)<br><br>
+    <span class="c">Vectores: cada eslinga se descompone</span><br>
+    T<sub>x</sub> = T·cos ${th}°   T<sub>y</sub> = T·sen ${th}°<br><br>
+    <span class="c">Equilibrio del gancho</span><br>
+    ΣF<sub>x</sub>: T·cos θ − T·cos θ = 0 ✓ (se cancelan)<br>
+    ΣF<sub>y</sub>: 2·T·sen ${th}° − ${fmt(W,2)} = 0<br>
+    T = ${fmt(W,2)} / (2 × ${fmt(sn,3)}) = <b>${fmt(T,2)} kN</b><br><br>
+    <span class="c">Compresión que sufre la viga: H = T·cos θ = ${fmt(H,2)} kN</span>`;
+}
+bind(['lL','lb','lh','lt'],drawLift);
+
+fillUnits('longitud','pulgada (in)','mm');
+drawTug();conv();drawVec();drawComp();drawBeam();drawLift();
+})();
+</script>
+</body>
+</html>
