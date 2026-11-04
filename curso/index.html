@@ -23,6 +23,7 @@
   --accent:#d9590b; --accent-soft:#fbe6d6; --concrete:#cdd5db; --steel:#8fa3b0;
   --f1:#1f5fa8; --f2:#0f7f73; --f3:#8a4fb3; --ok:#2e7d4f; --warn:#a86b0c; --bad:#bf3326;
   --tens:#c0262d; --comp:#1d5fd1;
+  --p1:#2463d6; --p2:#0b8f7e; --p3:#e2580b; --p4:#8b3fd1;
   --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
   --body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -32,12 +33,12 @@
   --paper:#0f151a; --panel:#161f26; --ink:#e4ebf0; --muted:#93a2ad; --line:#2d3a44; --grid:#1c262e;
   --accent:#ff8a3d; --accent-soft:#3a2416; --concrete:#3a4750; --steel:#5d7280;
   --f1:#6ea9f0; --f2:#4fcfbe; --f3:#c39ae8; --ok:#5cc58a; --warn:#e2b456; --bad:#f07264;
-  --tens:#f47b7b; --comp:#6ea6f7; color-scheme:dark}}
+  --tens:#f47b7b; --comp:#6ea6f7; --p1:#6aa6ff; --p2:#34d3bd; --p3:#ff9a52; --p4:#c690ff; color-scheme:dark}}
 :root[data-theme="dark"]{
   --paper:#0f151a; --panel:#161f26; --ink:#e4ebf0; --muted:#93a2ad; --line:#2d3a44; --grid:#1c262e;
   --accent:#ff8a3d; --accent-soft:#3a2416; --concrete:#3a4750; --steel:#5d7280;
   --f1:#6ea9f0; --f2:#4fcfbe; --f3:#c39ae8; --ok:#5cc58a; --warn:#e2b456; --bad:#f07264;
-  --tens:#f47b7b; --comp:#6ea6f7; color-scheme:dark}
+  --tens:#f47b7b; --comp:#6ea6f7; --p1:#6aa6ff; --p2:#34d3bd; --p3:#ff9a52; --p4:#c690ff; color-scheme:dark}
 
 *{box-sizing:border-box}
 html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 60px)}
@@ -220,6 +221,48 @@ svg text.halo{paint-order:stroke;stroke:var(--panel);stroke-width:4px}
 .refs{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:14px}
 .refs li{padding-left:22px;text-indent:-22px}
 footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
+
+/* color por parte del curso */
+.pI{--pc:var(--p1)} .pII{--pc:var(--p2)} .pIII{--pc:var(--p3)} .pIV{--pc:var(--p4)}
+.bar{border-bottom:0;box-shadow:0 2px 0 var(--ink)}
+.bar::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:4px;background:linear-gradient(90deg,var(--p1) 0 25%,var(--p2) 25% 50%,var(--p3) 50% 75%,var(--p4) 75%)}
+.hero{grid-template-columns:minmax(0,1fr)}
+.hero h1 span{background:linear-gradient(90deg,var(--p1),var(--p2) 35%,var(--p3) 70%,var(--p4));-webkit-background-clip:text;background-clip:text;color:transparent}
+.parts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.parts a{display:flex;gap:10px;align-items:center;text-decoration:none;color:#fff;background:var(--pc);padding:8px 14px 8px 8px;font-weight:600;font-size:15px}
+.parts a b{font-family:var(--display);font-size:18px;background:rgba(255,255,255,.22);min-width:30px;text-align:center;padding:1px 6px}
+.parts a:hover{filter:brightness(1.1)}
+.part{border-top:5px solid var(--pc)}
+.part h3{color:var(--pc)}
+.part a b{color:var(--pc)}
+.parthead{background:var(--pc);color:#fff;padding:22px 20px 20px;border-top:0;margin-top:34px;position:relative;overflow:hidden}
+.parthead b{color:#fff;opacity:.85}
+.parthead::after{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border:28px solid rgba(255,255,255,.14);border-radius:50%}
+section{border-top:3px solid var(--pc,var(--ink))}
+.sec-num{color:var(--pc,var(--accent))}
+.sec-head h2{color:var(--ink)}
+.sec-tag{color:var(--pc,var(--muted))}
+.obj{border-left-color:var(--pc,var(--ink))}
+.obj b{color:var(--pc,var(--muted))}
+.eq{border-left-color:var(--pc,var(--accent));background:color-mix(in srgb,var(--pc,var(--accent)) 7%,var(--panel))}
+.theory .panel{border-top:3px solid var(--pc,var(--line))}
+.lab .panel,section > .panel{border-top:3px solid var(--pc,var(--line))}
+.panel h3{color:var(--pc,var(--ink))}
+.obra{border-left-color:var(--pc,var(--accent));background:color-mix(in srgb,var(--pc,var(--accent)) 13%,var(--panel))}
+.obra .k{color:var(--pc,var(--accent))}
+.fix{border:1px solid color-mix(in srgb,var(--bad) 45%,var(--line));background:color-mix(in srgb,var(--bad) 6%,var(--panel))}
+.fix .k{color:var(--bad)}
+input[type=range]{accent-color:var(--pc,var(--accent))}
+.seg button[aria-pressed="true"]{background:var(--pc,var(--ink));color:#fff}
+.kp div{border-top:3px solid color-mix(in srgb,var(--pc,var(--accent)) 70%,transparent)}
+.kp b{color:var(--pc,var(--ink))}
+.calc .s{color:var(--pc,var(--ink))}
+.calc b{color:var(--pc,var(--accent))}
+.btn{background:var(--pc,var(--ink));border-color:var(--pc,var(--ink));color:#fff}
+.btn.alt{background:transparent;color:var(--ink);border-color:var(--line)}
+.grp-t{color:var(--pc,var(--ink))}
+table.t tr.sum td{color:var(--pc,var(--accent))}
+.chips button:hover{border-color:var(--pc,var(--accent))}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 @media print{body{background:#fff}.bar,.tbtn,.skip{display:none!important}section,.panel{break-inside:avoid}}
 </style>
@@ -238,32 +281,26 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
     <div class="eyebrow">Prototipo de curso · Tecnología en Obras Civiles · Universidad del Pacífico, sede Guapi</div>
     <h1>Estática aplicada <span>a obras civiles</span></h1>
     <p class="deck">Doce unidades que van del vector a la viga. En cada una lees la teoría, mueves un laboratorio que rehace la memoria de cálculo frente a ti y terminas en una situación real de obra.</p>
-  </div>
-  <div class="rotulo" aria-label="Datos del curso">
-    <div class="r"><div class="c full"><span class="k">Curso</span><span class="v t">Estática</span></div></div>
-    <div class="r"><div class="c full"><span class="k">Programa</span><span class="v">Tecnología en Obras Civiles</span></div></div>
-    <div class="r"><div class="c full"><span class="k">Autor</span><span class="v">Jerson Enrique Sinisterra García</span></div></div>
-    <div class="r"><div class="c"><span class="k">Versión</span><span class="v">Prototipo 1.0</span></div><div class="c"><span class="k">Año</span><span class="v">2026</span></div></div>
-    <div class="r"><div class="c"><span class="k">Unidades</span><span class="v">SI · kN · m</span></div><div class="c"><span class="k">Referencia</span><span class="v">Hibbeler, Beer</span></div></div>
+    <div class="parts"><a class="pI" href="#u1"><b>I</b>Fundamentos</a><a class="pII" href="#u5"><b>II</b>Equilibrio</a><a class="pIII" href="#u8"><b>III</b>Análisis estructural</a><a class="pIV" href="#u11"><b>IV</b>Geometría y síntesis</a></div>
   </div>
 </header>
 
 <div class="intro">
   <div class="toc" aria-label="Contenido">
-    <div class="part"><h3>Parte I · Fundamentos</h3><ol>
+    <div class="part pI"><h3>Parte I · Fundamentos</h3><ol>
       <li><a href="#u1"><b>01</b><span>Qué es la estática</span></a></li>
       <li><a href="#u2"><b>02</b><span>Unidades y conversiones</span></a></li>
       <li><a href="#u3"><b>03</b><span>Vectores fuerza en el plano</span></a></li>
       <li><a href="#u4"><b>04</b><span>Vectores fuerza en el espacio</span></a></li></ol></div>
-    <div class="part"><h3>Parte II · Equilibrio</h3><ol>
+    <div class="part pII"><h3>Parte II · Equilibrio</h3><ol>
       <li><a href="#u5"><b>05</b><span>Equilibrio de una partícula</span></a></li>
       <li><a href="#u6"><b>06</b><span>Momento y sistemas equivalentes</span></a></li>
       <li><a href="#u7"><b>07</b><span>Equilibrio del cuerpo rígido</span></a></li></ol></div>
-    <div class="part"><h3>Parte III · Análisis estructural</h3><ol>
+    <div class="part pIII"><h3>Parte III · Análisis estructural</h3><ol>
       <li><a href="#u8"><b>08</b><span>Armaduras</span></a></li>
       <li><a href="#u9"><b>09</b><span>Fuerzas internas en vigas</span></a></li>
       <li><a href="#u10"><b>10</b><span>Fricción seca</span></a></li></ol></div>
-    <div class="part"><h3>Parte IV · Geometría y síntesis</h3><ol>
+    <div class="part pIV"><h3>Parte IV · Geometría y síntesis</h3><ol>
       <li><a href="#u11"><b>11</b><span>Centroide y momento de inercia</span></a></li>
       <li><a href="#u12"><b>12</b><span>Caso integrador: izaje de una viga</span></a></li>
       <li><a href="#banco"><b>✎</b><span>Banco de ejercicios</span></a></li>
@@ -278,9 +315,9 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
 </div>
 
 <!-- ============ PARTE I ============ -->
-<div class="parthead"><b>Parte I</b><h2>Fundamentos</h2></div>
+<div class="parthead pI"><b>Parte I</b><h2>Fundamentos</h2></div>
 
-<section id="u1">
+<section id="u1" class="pI">
   <div class="sec-head"><div class="sec-num">01</div><h2>¿Qué es la estática?</h2><div class="sec-tag">Mecánica de cuerpos rígidos · leyes de Newton · idealizaciones</div></div>
   <p class="obj"><b>Objetivo</b>Ubicar la estática dentro de la mecánica y reconocer cuándo un cuerpo está en equilibrio.</p>
   <p class="lead">La estática estudia los cuerpos en <strong>equilibrio</strong>: en reposo o moviéndose a velocidad constante, porque la suma de fuerzas sobre ellos es cero. Si la suma no es cero, el cuerpo se acelera y eso ya lo estudia la dinámica.</p>
@@ -312,7 +349,7 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
   <div class="obra"><span class="k">En la obra</span><p>Una casa, un puente o un muro de contención se diseñan para quedarse quietos. Todo cálculo estructural arranca con la pregunta de la estática: ¿las fuerzas se cancelan?</p></div>
 </section>
 
-<section id="u2">
+<section id="u2" class="pI">
   <div class="sec-head"><div class="sec-num">02</div><h2>Unidades y conversiones</h2><div class="sec-tag">Sistema internacional · sistema inglés · masa y peso · homogeneidad dimensional</div></div>
   <p class="obj"><b>Objetivo</b>Convertir entre sistemas sin errores y distinguir masa de fuerza.</p>
   <p class="lead">La NSR-10 usa el Sistema Internacional: metros, kilonewtons y megapascales. En la ferretería y en la obra se sigue hablando de pulgadas, libras y psi. Convertir es multiplicar por un factor, y toda ecuación debe tener las mismas unidades en ambos lados.</p>
@@ -353,7 +390,7 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
   <div class="obra"><span class="k">En la obra</span><p>Pides "varilla de media" (1/2 in = 12,7 mm), "concreto de 3 000" (3 000 psi ≈ 21 MPa) o "tablones de 2×4" (pulgadas). Los planos estructurales vienen en mm, kN y MPa. Tú haces el puente entre los dos.</p></div>
 </section>
 
-<section id="u3">
+<section id="u3" class="pI">
   <div class="sec-head"><div class="sec-num">03</div><h2>Vectores fuerza en el plano</h2><div class="sec-tag">Componentes · suma y resta · resultante y equilibrante · ley del paralelogramo</div></div>
   <p class="obj"><b>Objetivo</b>Descomponer fuerzas, sumarlas por componentes y hallar la resultante y la equilibrante.</p>
   <p class="lead">Una fuerza tiene magnitud y dirección, así que 60 N + 45 N casi nunca da 105 N. Se descompone cada fuerza en x y y, se suman las x con las x y las y con las y, y se recompone.</p>
@@ -390,7 +427,7 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
   <div class="obra"><span class="k">En la obra</span><p>Los postes de energía, las torres de comunicación y los andamios altos llevan vientos (cables tensores). Se reparten para que la resultante sobre el poste sea casi cero; si un viento se afloja, la resultante deja de ser cero y el poste se inclina.</p></div>
 </section>
 
-<section id="u4">
+<section id="u4" class="pI">
   <div class="sec-head"><div class="sec-num">04</div><h2>Vectores fuerza en el espacio</h2><div class="sec-tag">Componentes cartesianas · vector posición · vector unitario · ángulos directores</div></div>
   <p class="obj"><b>Objetivo</b>Expresar en componentes x, y, z la fuerza de un cable definido por dos puntos.</p>
   <p class="lead">En la obra los cables no están en un plano: un viento sale de lo alto de un poste y llega a un anclaje en el piso. Su fuerza se escribe con el vector unitario de la recta que va del poste al anclaje.</p>
@@ -416,9 +453,9 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
 </section>
 
 <!-- ============ PARTE II ============ -->
-<div class="parthead"><b>Parte II</b><h2>Equilibrio</h2></div>
+<div class="parthead pII"><b>Parte II</b><h2>Equilibrio</h2></div>
 
-<section id="u5">
+<section id="u5" class="pII">
   <div class="sec-head"><div class="sec-num">05</div><h2>Equilibrio de una partícula</h2><div class="sec-tag">Diagrama de cuerpo libre · ΣFx = 0 · ΣFy = 0 · cables y poleas</div></div>
   <p class="obj"><b>Objetivo</b>Dibujar el diagrama de cuerpo libre de un nudo y hallar las tensiones de los cables que lo sostienen.</p>
   <p class="lead">Si todas las fuerzas pasan por un punto, basta con dos ecuaciones en el plano. El diagrama de cuerpo libre (DCL) aísla ese punto, borra el entorno y deja solo las fuerzas.</p>
@@ -443,7 +480,7 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
   <div class="obra"><span class="k">En la obra</span><p>Entre más acostados estén los cables (más cerca de la horizontal), más tensión llevan, aunque el peso sea el mismo. Con α = β = 30° cada cable carga el peso completo; con 60°, solo el 58 %.</p></div>
 </section>
 
-<section id="u6">
+<section id="u6" class="pII">
   <div class="sec-head"><div class="sec-num">06</div><h2>Momento y sistemas equivalentes</h2><div class="sec-tag">M = F · d · Varignon · par · resultante de cargas distribuidas</div></div>
   <p class="obj"><b>Objetivo</b>Calcular el momento de una fuerza y reemplazar una carga distribuida por su resultante.</p>
   <p class="lead">Una fuerza, además de empujar, hace girar. Esa tendencia es el momento, y depende de la distancia <strong>perpendicular</strong> entre el punto y la línea de acción de la fuerza.</p>
@@ -479,7 +516,7 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
   <div class="obra"><span class="k">En la obra</span><p>Por eso una llave larga afloja la tuerca que una corta no puede, y por eso el empuje de tierra sobre un muro de contención, que crece con la profundidad (carga triangular), actúa a un tercio de la altura desde la base.</p></div>
 </section>
 
-<section id="u7">
+<section id="u7" class="pII">
   <div class="sec-head"><div class="sec-num">07</div><h2>Equilibrio del cuerpo rígido</h2><div class="sec-tag">Apoyos y reacciones · ΣFx = 0 · ΣFy = 0 · ΣM = 0 · isostaticidad</div></div>
   <p class="obj"><b>Objetivo</b>Identificar las reacciones de cada apoyo y calcularlas en vigas con cargas puntuales y distribuidas.</p>
   <p class="lead">Una viga además de no trasladarse no debe girar. Eso agrega una tercera ecuación. Con tres ecuaciones se resuelven como máximo tres reacciones: la estructura es <strong>isostática</strong>.</p>
@@ -520,9 +557,9 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
 </section>
 
 <!-- ============ PARTE III ============ -->
-<div class="parthead"><b>Parte III</b><h2>Análisis estructural</h2></div>
+<div class="parthead pIII"><b>Parte III</b><h2>Análisis estructural</h2></div>
 
-<section id="u8">
+<section id="u8" class="pIII">
   <div class="sec-head"><div class="sec-num">08</div><h2>Armaduras</h2><div class="sec-tag">Método de nudos · método de secciones · barras de fuerza cero · b + r = 2j</div></div>
   <p class="obj"><b>Objetivo</b>Resolver una armadura plana, clasificar cada barra en tensión o compresión y comprobar con el método de secciones.</p>
   <p class="lead">Una armadura son barras rectas unidas en nudos que forman triángulos. Si las cargas llegan solo a los nudos, cada barra trabaja únicamente a lo largo de su eje: o se estira (tensión) o se acorta (compresión).</p>
@@ -556,7 +593,7 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
   <div class="obra"><span class="k">En la obra</span><p>En una cercha de puente el cordón superior se comprime y el inferior se estira. Por eso el superior se revisa por pandeo y el inferior puede ser un perfil más liviano. Subir la altura h reduce las fuerzas en los cordones: mírelo en el laboratorio.</p></div>
 </section>
 
-<section id="u9">
+<section id="u9" class="pIII">
   <div class="sec-head"><div class="sec-num">09</div><h2>Fuerzas internas en vigas</h2><div class="sec-tag">N, V, M · método del corte · dV/dx = −w · dM/dx = V</div></div>
   <p class="obj"><b>Objetivo</b>Hallar la fuerza cortante y el momento flector en cualquier sección y dibujar sus diagramas.</p>
   <p class="lead">La viga no falla por las reacciones sino por lo que pasa dentro de ella. Un corte imaginario en x deja ver tres fuerzas internas: la normal N, la cortante V y el momento flector M. Este laboratorio usa <strong>la misma viga de la unidad 07</strong>.</p>
@@ -574,7 +611,7 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
   <div class="obra"><span class="k">En la obra</span><p>El diagrama de M dice dónde va el acero longitudinal (abajo en el centro de una viga apoyada, arriba en el empotramiento de un voladizo). El de V dice dónde van los estribos más juntos: cerca de los apoyos.</p></div>
 </section>
 
-<section id="u10">
+<section id="u10" class="pIII">
   <div class="sec-head"><div class="sec-num">10</div><h2>Fricción seca</h2><div class="sec-tag">Ley de Coulomb · movimiento inminente · ángulo óptimo de tiro</div></div>
   <p class="obj"><b>Objetivo</b>Decidir si un cuerpo se desliza y hallar la fuerza mínima para moverlo.</p>
   <p class="lead">La fricción se opone al deslizamiento y crece con la fuerza normal hasta un máximo. Si la fuerza aplicada supera ese máximo, el cuerpo se mueve.</p>
@@ -603,9 +640,9 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
 </section>
 
 <!-- ============ PARTE IV ============ -->
-<div class="parthead"><b>Parte IV</b><h2>Geometría y síntesis</h2></div>
+<div class="parthead pIV"><b>Parte IV</b><h2>Geometría y síntesis</h2></div>
 
-<section id="u11">
+<section id="u11" class="pIV">
   <div class="sec-head"><div class="sec-num">11</div><h2>Centroide y momento de inercia</h2><div class="sec-tag">Áreas compuestas · ȳ = ΣAy / ΣA · teorema de ejes paralelos</div></div>
   <p class="obj"><b>Objetivo</b>Ubicar el centroide de una sección compuesta y calcular su momento de inercia respecto al eje centroidal.</p>
   <p class="lead">Una viga T o un perfil I se dividen en rectángulos. El centroide es el promedio de sus centroides pesado por el área, y el momento de inercia suma el de cada rectángulo trasladado al eje común.</p>
@@ -634,7 +671,7 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
   <div class="obra"><span class="k">En la obra</span><p>Cuando la losa se funde junto con la viga, trabajan como una viga T: el ala sube el centroide y aumenta mucho la inercia. Con la inercia y el momento de la unidad 09 se estima el esfuerzo de flexión σ = M · c / I, que verás en Resistencia de materiales.</p></div>
 </section>
 
-<section id="u12">
+<section id="u12" class="pIV">
   <div class="sec-head"><div class="sec-num">12</div><h2>Caso integrador: izar una viga</h2><div class="sec-tag">Unidades + vectores + equilibrio de partícula + revisión de capacidad</div></div>
   <p class="obj"><b>Objetivo</b>Aplicar en una sola maniobra lo aprendido: peso propio, descomposición, equilibrio y comparación contra la capacidad del aparejo.</p>
   <p class="lead">Una grúa levanta una viga prefabricada con dos eslingas. ¿Cuánto tiene que aguantar cada eslinga, y alcanza su capacidad de trabajo? Cambia el ángulo: entre más acostadas las eslingas, más tensión, aunque la viga pese lo mismo.</p>
@@ -661,7 +698,7 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
   <div class="obra"><span class="k">En la obra</span><p>Las guías de izaje suelen recomendar trabajar cerca de 60° y no bajar de 30°: a 30° cada eslinga ya carga el peso completo de la viga y por debajo la tensión se dispara. La componente horizontal T · cos θ además comprime la viga de punta a punta. El plan de izaje real lo firma un responsable calificado.</p></div>
 </section>
 
-<section id="banco">
+<section id="banco" class="pIV">
   <div class="sec-head"><div class="sec-num">✎</div><h2>Banco de ejercicios</h2><div class="sec-tag">Problemas generados con datos nuevos cada vez · tolerancia del 1 %</div></div>
   <p class="lead">Escoge un tema, resuelve en el cuaderno y escribe tu resultado. Después de dos intentos aparece la solución completa.</p>
   <div class="panel quiz">
@@ -673,7 +710,7 @@ footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
   </div>
 </section>
 
-<section id="verif">
+<section id="verif" class="pIV">
   <div class="sec-head"><div class="sec-num">✓</div><h2>Verificación del motor de cálculo</h2><div class="sec-tag">Cada fila corre el solucionador del prototipo y lo compara con la fórmula analítica</div></div>
   <p class="lead">Los laboratorios de vigas y armaduras usan solucionadores generales. Esta tabla se calcula al abrir la página: si el motor cambiara y dejara de coincidir con la teoría, se vería aquí.</p>
   <div class="panel"><div class="tw"><table class="t" id="vTab"></table></div><p id="vMsg" style="margin-top:10px;font-size:15px"></p></div>
