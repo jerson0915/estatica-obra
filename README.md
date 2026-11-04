@@ -15,6 +15,12 @@ Al final hay ejercicios de práctica con su respuesta.
 
 Simulador de estudio: los valores de obra son de referencia para aprender; en una obra real manda el diseño del ingeniero.
 
+## Prototipo del curso de Estática
+
+Doce unidades (vectores 2D y 3D, equilibrio, momento, cuerpo rígido, armaduras, fuerzas internas, fricción, centroides e inercia, caso integrador), con laboratorios interactivos, memoria de cálculo paso a paso, banco de ejercicios y verificación del motor de cálculo.
+
+🔗 **Ver el prototipo:** https://jerson0915.github.io/estatica-obra/curso/
+
 ## Estática didáctica
 
 Versión ampliada con simulación 3D, cálculo paso a paso, caso integrador y laboratorio de vigas y cerchas, preparada como trabajo de grado.

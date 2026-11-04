@@ -2096,7 +2096,7 @@ function beamSolve(d){
   const V = (x) => { let v = 0; R.forEach(r=>{ if(r.x <= x) v += r.R; }); loads.forEach(q=>{ if(q.t === 'P'){ if(q.x <= x) v -= q.P; } else if(x > q.x1) v -= q.w*(Math.min(x,q.x2)-q.x1); }); return v; };
   const M = (x) => { let m = cant ? -MA : 0; R.forEach(r=>{ if(r.x <= x) m += r.R*(x-r.x); }); loads.forEach(q=>{ if(q.t === 'P'){ if(q.x <= x) m -= q.P*(x-q.x); } else if(x > q.x1){ if(x <= q.x2) m -= q.w*(x-q.x1)*(x-q.x1)/2; else m -= q.w*(q.x2-q.x1)*(x-(q.x1+q.x2)/2); } }); return m; };
   const keys = [0,L,xa,xb]; loads.forEach(q=>{ if(q.t === 'P') keys.push(q.x); else { keys.push(q.x1); keys.push(q.x2); } });
-  let xs = []; for(let i=0;i<=300;i++) xs.push(L*i/300); keys.forEach(k=>{ xs.push(k-1e-7); xs.push(k+1e-7); });
+  let xs = []; for(let i=0;i<=300;i++) xs.push(L*i/300); keys.forEach(k=>{ xs.push(k-1e-7); xs.push(k); xs.push(k+1e-7); });
   xs = xs.filter(x=>x >= 0 && x <= L).sort((a,b)=>a-b);
   const Vs = xs.map(V), Ms = xs.map(M); let mi = 0, ni = 0, vi = 0;
   Ms.forEach((m,i)=>{ if(m > Ms[mi]) mi = i; if(m < Ms[ni]) ni = i; }); Vs.forEach((v,i)=>{ if(Math.abs(v) > Math.abs(Vs[vi])) vi = i; });

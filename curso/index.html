@@ -1,0 +1,1167 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Prototipo del curso de Estática para Tecnología en Obras Civiles: doce unidades con teoría, laboratorios interactivos, cálculo paso a paso y banco de ejercicios.">
+<meta name="author" content="Jerson Enrique Sinisterra García">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Estática aplicada a obras civiles">
+<meta property="og:description" content="Prototipo de curso con laboratorios interactivos, cálculo paso a paso y banco de ejercicios.">
+<meta property="og:image" content="https://jerson0915.github.io/estatica-obra/og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23d9590b'/%3E%3Cpath d='M16 6 L7 20 M16 6 L25 20' stroke='%23fff' stroke-width='3'/%3E%3Crect x='4' y='20' width='24' height='6' fill='%23fff'/%3E%3C/svg%3E">
+<title>Estática aplicada a obras civiles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: cuaderno de obra cuadriculado. Una sola ruta de 12 unidades agrupadas en 4 partes; cada unidad = objetivo,
+   teoría con fórmulas, laboratorio (dibujo + controles + memoria de cálculo), error frecuente y nota "en la obra". */
+:root{
+  --paper:#eef2f4; --panel:#ffffff; --ink:#15212b; --muted:#5a6873; --line:#c6d0d7; --grid:#dfe6ea;
+  --accent:#d9590b; --accent-soft:#fbe6d6; --concrete:#cdd5db; --steel:#8fa3b0;
+  --f1:#1f5fa8; --f2:#0f7f73; --f3:#8a4fb3; --ok:#2e7d4f; --warn:#a86b0c; --bad:#bf3326;
+  --tens:#c0262d; --comp:#1d5fd1;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f151a; --panel:#161f26; --ink:#e4ebf0; --muted:#93a2ad; --line:#2d3a44; --grid:#1c262e;
+  --accent:#ff8a3d; --accent-soft:#3a2416; --concrete:#3a4750; --steel:#5d7280;
+  --f1:#6ea9f0; --f2:#4fcfbe; --f3:#c39ae8; --ok:#5cc58a; --warn:#e2b456; --bad:#f07264;
+  --tens:#f47b7b; --comp:#6ea6f7; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f151a; --panel:#161f26; --ink:#e4ebf0; --muted:#93a2ad; --line:#2d3a44; --grid:#1c262e;
+  --accent:#ff8a3d; --accent-soft:#3a2416; --concrete:#3a4750; --steel:#5d7280;
+  --f1:#6ea9f0; --f2:#4fcfbe; --f3:#c39ae8; --ok:#5cc58a; --warn:#e2b456; --bad:#f07264;
+  --tens:#f47b7b; --comp:#6ea6f7; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 60px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+body.proj main,body.proj .bar{zoom:1.22}
+[hidden]{display:none!important}
+main{max-width:1120px;margin:0 auto}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.05}
+p{margin:0;max-width:72ch}
+a{color:var(--accent)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.skip{position:absolute;left:-999px;top:8px;background:var(--accent);color:#fff;padding:8px 14px;z-index:30}
+.skip:focus{left:16px}
+
+/* barra fija */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:8;background:var(--paper);border-bottom:2px solid var(--ink);
+  display:flex;align-items:center;gap:10px;padding-block:8px;max-width:1120px;margin:0 auto}
+.bar .brand{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:18px;letter-spacing:.02em;white-space:nowrap}
+.bar .brand span{color:var(--accent)}
+.bar nav{display:flex;gap:4px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none}
+.bar nav a{font-family:var(--mono);font-size:12px;text-decoration:none;color:var(--muted);border:1px solid var(--line);background:var(--panel);
+  padding:4px 8px;white-space:nowrap}
+.bar nav a.on{color:#fff;background:var(--ink);border-color:var(--ink)}
+.bar nav a:hover{border-color:var(--accent)}
+.tbtn{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:5px 10px;cursor:pointer;white-space:nowrap}
+.tbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* portada */
+.hero{padding-block:34px 22px;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:28px;align-items:end}
+@media (max-width:860px){.hero{grid-template-columns:minmax(0,1fr)}}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hero h1{font-size:clamp(44px,7.6vw,86px);letter-spacing:.01em;text-transform:uppercase;margin-top:10px}
+.hero h1 span{color:var(--accent);display:block}
+.hero .deck{font-size:18px;color:var(--muted);margin-top:12px}
+.rotulo{border:2px solid var(--ink);background:var(--panel);font-size:13px}
+.rotulo .r{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--ink)}
+.rotulo .r:first-child{border-top:0}
+.rotulo .c{padding:6px 10px;display:grid;gap:1px;min-width:0}
+.rotulo .c + .c{border-left:1px solid var(--ink)}
+.rotulo .full{grid-column:1/-1}
+.rotulo .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.rotulo .v{font-family:var(--mono);font-size:13px;overflow-wrap:anywhere}
+.rotulo .v.t{font-family:var(--display);font-size:20px;font-weight:700;text-transform:uppercase}
+
+.intro{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;padding-bottom:28px}
+@media (max-width:860px){.intro{grid-template-columns:minmax(0,1fr)}}
+.toc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:600px){.toc{grid-template-columns:minmax(0,1fr)}}
+.part{background:var(--panel);border:1px solid var(--line);padding:12px 14px}
+.part h3{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:6px}
+.part ol{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.part a{display:grid;grid-template-columns:30px 1fr;gap:6px;text-decoration:none;color:var(--ink);font-size:15px}
+.part a b{font-family:var(--mono);color:var(--muted);font-weight:500;font-size:13px}
+.part a:hover span{color:var(--accent)}
+
+/* unidad */
+section{padding-block:36px;border-top:2px solid var(--ink);display:grid;gap:18px}
+.parthead{padding-block:30px 0;border-top:6px solid var(--ink);display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}
+.parthead b{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase}
+.parthead h2{font-size:clamp(30px,5vw,46px);text-transform:uppercase}
+.sec-head{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;align-items:end}
+.sec-num{font-family:var(--display);font-size:60px;color:var(--accent);line-height:.9;grid-row:span 2;min-width:56px}
+.sec-head h2{font-size:clamp(28px,4vw,40px);text-transform:uppercase}
+.sec-tag{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.lead{font-size:17px}
+.obj{font-size:15px;border-left:3px solid var(--ink);padding:2px 0 2px 12px}
+.obj b{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:block}
+.theory{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.theory .panel p{font-size:15px}
+.eq{font-family:var(--mono);font-size:14px;line-height:1.8;background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--accent);
+  padding:8px 12px;overflow-x:auto;white-space:nowrap;margin-top:8px}
+.lab{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.lab{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);padding:16px;min-width:0}
+.panel h3{font-size:20px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:10px}
+.panel h3 small{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);font-weight:500;margin-left:6px}
+.svgbox{width:100%;height:auto;display:block}
+.cap{font-size:13px;color:var(--muted);margin-top:6px}
+.obra{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:14px 16px;border-left:4px solid var(--accent);background:var(--accent-soft)}
+.obra .k,.fix .k{font-family:var(--display);font-weight:700;text-transform:uppercase;font-size:15px;letter-spacing:.05em;color:var(--accent)}
+.obra p{font-size:15px}
+.fix{border:1px dashed var(--line);padding:12px 14px;font-size:15px;background:var(--panel);display:grid;grid-template-columns:auto 1fr;gap:12px}
+@media (max-width:560px){.obra,.fix{grid-template-columns:minmax(0,1fr);gap:4px}}
+details.ej{border:1px solid var(--line);background:var(--panel);padding:10px 14px}
+details.ej summary{cursor:pointer;font-weight:600}
+details.ej .calc{margin-top:8px}
+
+/* controles */
+.ctrls{display:grid;gap:12px}
+.ctrl{display:grid;gap:4px}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:500}
+.ctrl output{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.grp{display:grid;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.grp:first-child{border-top:0;padding-top:0}
+.grp-t{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:8px}
+.sw{width:14px;height:4px;display:inline-block}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line)}
+.seg button{font:inherit;font-size:14px;padding:6px 12px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select,input[type=number],input[type=text]{font:inherit;font-size:15px;padding:7px 8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:2px;width:100%;min-width:0}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:480px){.row3,.row2{grid-template-columns:minmax(0,1fr)}}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:inherit;font-size:13px;padding:5px 10px;border:1px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer;border-radius:2px}
+.chips button:hover{border-color:var(--accent)}
+.check{display:flex;gap:8px;align-items:center;font-size:14px}
+.btn{font:inherit;font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);cursor:pointer}
+.btn.alt{background:transparent;color:var(--ink);border-color:var(--line)}
+
+/* resultados */
+.big{font-family:var(--display);font-size:42px;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:18px;color:var(--muted);margin-left:6px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.kp div{background:var(--panel);padding:8px 10px;display:grid;gap:2px}
+.kp span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.kp b{font-family:var(--display);font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.05}
+.calc{font-family:var(--mono);font-size:13px;line-height:1.75;overflow-x:auto;white-space:nowrap;color:var(--ink)}
+.calc .c{color:var(--muted);white-space:normal;display:inline-block;max-width:70ch}
+.calc b{color:var(--accent);font-weight:500}
+.calc .s{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:14px;color:var(--ink);display:block;margin-top:6px}
+table.t{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.tw{overflow-x:auto;max-width:100%}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.t th:first-child,table.t td:first-child{text-align:left}
+table.t th{font-weight:500;color:var(--muted);font-size:12px}
+table.t tr.sum td{font-weight:500;color:var(--accent);border-bottom:0}
+.pill{display:inline-block;padding:3px 10px;font-size:13px;font-weight:600;border:1.5px solid currentColor;border-radius:2px}
+.pill.ok{color:var(--ok)} .pill.warn{color:var(--warn)} .pill.bad{color:var(--bad)}
+.stack{display:grid;gap:12px}
+.tn{color:var(--tens)} .cp{color:var(--comp)}
+
+/* árbol */
+.tree{display:grid;gap:8px}
+.lvl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lvl .arr{font-family:var(--mono);color:var(--muted);width:22px}
+.node{padding:4px 10px;border:1px solid var(--line);font-size:14px;color:var(--muted);background:var(--paper)}
+.node.on{border-color:var(--ink);color:var(--ink);font-weight:600;background:var(--panel)}
+.node.star{border-color:var(--accent);background:var(--accent);color:#fff}
+
+/* svg */
+svg text{font-family:var(--mono);font-size:12px;fill:var(--ink)}
+svg text.m{fill:var(--muted)}
+svg text.big{font-size:15px;font-weight:500}
+svg text.halo{paint-order:stroke;stroke:var(--panel);stroke-width:4px}
+.stroke{fill:none;stroke-linecap:round}
+.fill{stroke:none}
+.c1.stroke{stroke:var(--f1)} .c1.fill{fill:var(--f1)}
+.c2.stroke{stroke:var(--f2)} .c2.fill{fill:var(--f2)}
+.c3.stroke{stroke:var(--f3)} .c3.fill{fill:var(--f3)}
+.cr.stroke{stroke:var(--accent)} .cr.fill{fill:var(--accent)}
+.ce.stroke{stroke:var(--ok)} .ce.fill{fill:var(--ok)}
+.cg.stroke{stroke:var(--muted)} .cg.fill{fill:var(--muted)}
+.ci.stroke{stroke:var(--ink)} .ci.fill{fill:var(--ink)}
+.ct.stroke{stroke:var(--tens)} .ct.fill{fill:var(--tens)}
+.cc.stroke{stroke:var(--comp)} .cc.fill{fill:var(--comp)}
+.dash{stroke-dasharray:5 5}
+.faint{opacity:.35}
+.gridl{stroke:var(--grid);stroke-width:1}
+.axis{stroke:var(--line);stroke-width:1.5}
+.beam{fill:var(--concrete);stroke:var(--ink);stroke-width:1.5}
+.sup{fill:var(--panel);stroke:var(--ink);stroke-width:1.5}
+.gnd{stroke:var(--muted);stroke-width:1}
+.box{fill:var(--concrete);stroke:var(--ink);stroke-width:1.5}
+.area1{fill:var(--f1);opacity:.18} .area2{fill:var(--f3);opacity:.18}
+
+/* banco y cierre */
+.quiz{display:grid;gap:12px}
+.quiz .q{font-size:16px}
+.ans{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ans input{width:160px;font-family:var(--mono)}
+.fb{font-size:15px;min-height:22px}
+.good{color:var(--ok);font-weight:600} .no{color:var(--bad);font-weight:600}
+.refs{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:14px}
+.refs li{padding-left:22px;text-indent:-22px}
+footer{padding-top:24px;color:var(--muted);font-size:13px;display:grid;gap:6px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media print{body{background:#fff}.bar,.tbtn,.skip{display:none!important}section,.panel{break-inside:avoid}}
+</style>
+</head>
+<body>
+<a class="skip" href="#u1">Saltar al contenido</a>
+<div class="bar">
+  <div class="brand">Estática <span>· Obras</span></div>
+  <nav id="nav" aria-label="Unidades"></nav>
+  <button type="button" class="tbtn" id="projBtn" aria-pressed="false" title="Agranda todo para proyectar en clase">Modo proyector</button>
+  <button type="button" class="tbtn" id="themeBtn">Tema</button>
+</div>
+<main>
+<header class="hero">
+  <div>
+    <div class="eyebrow">Prototipo de curso · Tecnología en Obras Civiles · Universidad del Pacífico, sede Guapi</div>
+    <h1>Estática aplicada <span>a obras civiles</span></h1>
+    <p class="deck">Doce unidades que van del vector a la viga. En cada una lees la teoría, mueves un laboratorio que rehace la memoria de cálculo frente a ti y terminas en una situación real de obra.</p>
+  </div>
+  <div class="rotulo" aria-label="Datos del curso">
+    <div class="r"><div class="c full"><span class="k">Curso</span><span class="v t">Estática</span></div></div>
+    <div class="r"><div class="c full"><span class="k">Programa</span><span class="v">Tecnología en Obras Civiles</span></div></div>
+    <div class="r"><div class="c full"><span class="k">Autor</span><span class="v">Jerson Enrique Sinisterra García</span></div></div>
+    <div class="r"><div class="c"><span class="k">Versión</span><span class="v">Prototipo 1.0</span></div><div class="c"><span class="k">Año</span><span class="v">2026</span></div></div>
+    <div class="r"><div class="c"><span class="k">Unidades</span><span class="v">SI · kN · m</span></div><div class="c"><span class="k">Referencia</span><span class="v">Hibbeler, Beer</span></div></div>
+  </div>
+</header>
+
+<div class="intro">
+  <div class="toc" aria-label="Contenido">
+    <div class="part"><h3>Parte I · Fundamentos</h3><ol>
+      <li><a href="#u1"><b>01</b><span>Qué es la estática</span></a></li>
+      <li><a href="#u2"><b>02</b><span>Unidades y conversiones</span></a></li>
+      <li><a href="#u3"><b>03</b><span>Vectores fuerza en el plano</span></a></li>
+      <li><a href="#u4"><b>04</b><span>Vectores fuerza en el espacio</span></a></li></ol></div>
+    <div class="part"><h3>Parte II · Equilibrio</h3><ol>
+      <li><a href="#u5"><b>05</b><span>Equilibrio de una partícula</span></a></li>
+      <li><a href="#u6"><b>06</b><span>Momento y sistemas equivalentes</span></a></li>
+      <li><a href="#u7"><b>07</b><span>Equilibrio del cuerpo rígido</span></a></li></ol></div>
+    <div class="part"><h3>Parte III · Análisis estructural</h3><ol>
+      <li><a href="#u8"><b>08</b><span>Armaduras</span></a></li>
+      <li><a href="#u9"><b>09</b><span>Fuerzas internas en vigas</span></a></li>
+      <li><a href="#u10"><b>10</b><span>Fricción seca</span></a></li></ol></div>
+    <div class="part"><h3>Parte IV · Geometría y síntesis</h3><ol>
+      <li><a href="#u11"><b>11</b><span>Centroide y momento de inercia</span></a></li>
+      <li><a href="#u12"><b>12</b><span>Caso integrador: izaje de una viga</span></a></li>
+      <li><a href="#banco"><b>✎</b><span>Banco de ejercicios</span></a></li>
+      <li><a href="#verif"><b>✓</b><span>Verificación del motor de cálculo</span></a></li></ol></div>
+  </div>
+  <div class="panel stack">
+    <h3>Cómo usar este prototipo</h3>
+    <p style="font-size:15px"><b>En clase:</b> el docente proyecta la unidad (botón <i>Modo proyector</i>), plantea la situación y pide a los estudiantes que predigan el resultado antes de mover el control.</p>
+    <p style="font-size:15px"><b>Fuera de clase:</b> el estudiante resuelve en el cuaderno el ejemplo de cada unidad y lo comprueba con el laboratorio. El banco de ejercicios genera problemas nuevos con verificación.</p>
+    <p style="font-size:15px"><b>Convenciones:</b> derecha y arriba positivos; momento antihorario positivo; tensión positiva y compresión negativa; coma decimal.</p>
+  </div>
+</div>
+
+<!-- ============ PARTE I ============ -->
+<div class="parthead"><b>Parte I</b><h2>Fundamentos</h2></div>
+
+<section id="u1">
+  <div class="sec-head"><div class="sec-num">01</div><h2>¿Qué es la estática?</h2><div class="sec-tag">Mecánica de cuerpos rígidos · leyes de Newton · idealizaciones</div></div>
+  <p class="obj"><b>Objetivo</b>Ubicar la estática dentro de la mecánica y reconocer cuándo un cuerpo está en equilibrio.</p>
+  <p class="lead">La estática estudia los cuerpos en <strong>equilibrio</strong>: en reposo o moviéndose a velocidad constante, porque la suma de fuerzas sobre ellos es cero. Si la suma no es cero, el cuerpo se acelera y eso ya lo estudia la dinámica.</p>
+  <div class="theory">
+    <div class="panel"><h3>Primera y tercera ley</h3><p>Una partícula en reposo sigue en reposo si la fuerza resultante es cero. Y toda fuerza tiene su reacción igual y opuesta: si la viga empuja la columna hacia abajo, la columna empuja la viga hacia arriba con la misma fuerza.</p><div class="eq">ΣF = 0 &nbsp;⇔&nbsp; a = 0</div></div>
+    <div class="panel"><h3>Idealizaciones</h3><p><b>Partícula:</b> todas las fuerzas pasan por un punto. <b>Cuerpo rígido:</b> no se deforma. <b>Fuerza concentrada:</b> actúa en un punto. Son modelos: simplifican la estructura real para poder calcularla.</p></div>
+  </div>
+  <div class="lab">
+    <div class="panel">
+      <h3>Tira y afloja</h3>
+      <svg id="tug" class="svgbox" viewBox="0 0 600 170" role="img" aria-label="Bloque jalado por dos fuerzas opuestas"></svg>
+      <div class="ctrls" style="margin-top:10px">
+        <div class="ctrl"><label for="tugL">Obrero izquierdo jala <output id="tugLo"></output></label><input id="tugL" type="range" min="0" max="100" value="60"></div>
+        <div class="ctrl"><label for="tugR">Obrero derecho jala <output id="tugRo"></output></label><input id="tugR" type="range" min="0" max="100" value="60"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Dónde queda la estática</h3>
+      <div class="tree">
+        <div class="lvl"><span class="arr">▸</span><span class="node on">Física</span></div>
+        <div class="lvl"><span class="arr">└</span><span class="node on">Mecánica</span><span class="node">Termodinámica</span><span class="node">Electromagnetismo</span></div>
+        <div class="lvl"><span class="arr">&nbsp;└</span><span class="node on">Cuerpos rígidos</span><span class="node">Cuerpos deformables</span><span class="node">Fluidos</span></div>
+        <div class="lvl"><span class="arr">&nbsp;&nbsp;└</span><span class="node star">Estática (a = 0)</span><span class="node">Dinámica (a ≠ 0)</span></div>
+      </div>
+      <p style="margin-top:12px;font-size:15px;color:var(--muted)">"Cuerpos deformables" es la materia siguiente: Resistencia de materiales. Primero se calculan las fuerzas con estática; luego se revisa si el material las resiste.</p>
+    </div>
+  </div>
+  <div class="fix"><span class="k">Error frecuente</span><p>Decir que la estática está "al lado" de la mecánica. Está <em>dentro</em> de ella. Y equilibrio no exige reposo: una viga que la grúa baja a velocidad constante también está en equilibrio (ΣF = 0), aunque no esté quieta.</p></div>
+  <div class="obra"><span class="k">En la obra</span><p>Una casa, un puente o un muro de contención se diseñan para quedarse quietos. Todo cálculo estructural arranca con la pregunta de la estática: ¿las fuerzas se cancelan?</p></div>
+</section>
+
+<section id="u2">
+  <div class="sec-head"><div class="sec-num">02</div><h2>Unidades y conversiones</h2><div class="sec-tag">Sistema internacional · sistema inglés · masa y peso · homogeneidad dimensional</div></div>
+  <p class="obj"><b>Objetivo</b>Convertir entre sistemas sin errores y distinguir masa de fuerza.</p>
+  <p class="lead">La NSR-10 usa el Sistema Internacional: metros, kilonewtons y megapascales. En la ferretería y en la obra se sigue hablando de pulgadas, libras y psi. Convertir es multiplicar por un factor, y toda ecuación debe tener las mismas unidades en ambos lados.</p>
+  <div class="theory">
+    <div class="panel"><h3>Masa y peso</h3><p>La masa (kg) es cantidad de materia; el peso es una fuerza (N). Un bulto de cemento de 50 kg pesa 490 N = 0,49 kN. Como referencia, 1 kN es el peso de unos 102 kg: más o menos dos bultos de cemento.</p><div class="eq">W = m · g &nbsp;&nbsp; g = 9,81 m/s²</div></div>
+    <div class="panel"><h3>Cifras significativas</h3><p>Los datos de obra rara vez tienen más de 3 cifras confiables. Calcula con todas las cifras y reporta el resultado final con 3: 16,38 kN y no 16,383 412 kN.</p><div class="eq">1 kN = 1 000 N &nbsp;&nbsp; 1 MPa = 1 N/mm²</div></div>
+  </div>
+  <div class="lab">
+    <div class="panel stack">
+      <h3>Convertidor</h3>
+      <div class="row3">
+        <div class="ctrl"><label for="cvCat">Magnitud</label><select id="cvCat"><option value="longitud">Longitud</option><option value="fuerza">Fuerza</option><option value="masa">Masa</option><option value="presion">Presión / esfuerzo</option><option value="momento">Momento</option></select></div>
+        <div class="ctrl"><label for="cvFrom">De</label><select id="cvFrom"></select></div>
+        <div class="ctrl"><label for="cvTo">A</label><select id="cvTo"></select></div>
+      </div>
+      <div class="ctrl"><label for="cvVal">Valor</label><input id="cvVal" type="number" step="any" value="0.5"></div>
+      <div class="big" id="cvOut"></div>
+      <div class="calc" id="cvCalc"></div>
+      <div><div class="eyebrow" style="margin-bottom:6px">Casos de obra</div><div class="chips" id="cvEx"></div></div>
+    </div>
+    <div class="panel">
+      <h3>Factores de conversión</h3>
+      <div class="tw"><table class="t">
+        <tr><th>Inglés y técnico</th><th>Sistema internacional</th></tr>
+        <tr><td>1 pulgada (in)</td><td>25,4 mm</td></tr>
+        <tr><td>1 pie (ft)</td><td>0,3048 m</td></tr>
+        <tr><td>1 libra masa (lb)</td><td>0,4536 kg</td></tr>
+        <tr><td>1 libra fuerza (lbf)</td><td>4,448 N</td></tr>
+        <tr><td>1 kip (1 000 lbf)</td><td>4,448 kN</td></tr>
+        <tr><td>1 kgf</td><td>9,807 N</td></tr>
+        <tr><td>1 psi</td><td>6,895 kPa</td></tr>
+        <tr><td>1 kgf/cm²</td><td>98,07 kPa</td></tr>
+        <tr><td>1 kip·ft</td><td>1,356 kN·m</td></tr>
+      </table></div>
+    </div>
+  </div>
+  <div class="fix"><span class="k">Error frecuente</span><p>Mezclar N y kN en la misma ecuación, o tratar 50 kg como si fueran 50 kN. Convierte todo a kN y m antes de empezar.</p></div>
+  <div class="obra"><span class="k">En la obra</span><p>Pides "varilla de media" (1/2 in = 12,7 mm), "concreto de 3 000" (3 000 psi ≈ 21 MPa) o "tablones de 2×4" (pulgadas). Los planos estructurales vienen en mm, kN y MPa. Tú haces el puente entre los dos.</p></div>
+</section>
+
+<section id="u3">
+  <div class="sec-head"><div class="sec-num">03</div><h2>Vectores fuerza en el plano</h2><div class="sec-tag">Componentes · suma y resta · resultante y equilibrante · ley del paralelogramo</div></div>
+  <p class="obj"><b>Objetivo</b>Descomponer fuerzas, sumarlas por componentes y hallar la resultante y la equilibrante.</p>
+  <p class="lead">Una fuerza tiene magnitud y dirección, así que 60 N + 45 N casi nunca da 105 N. Se descompone cada fuerza en x y y, se suman las x con las x y las y con las y, y se recompone.</p>
+  <div class="theory">
+    <div class="panel"><h3>Componentes</h3><p>Con θ medido desde el eje +x en sentido antihorario:</p><div class="eq">Fx = F · cos θ &nbsp;&nbsp; Fy = F · sen θ</div><div class="eq">F = √(Fx² + Fy²) &nbsp;&nbsp; θ = atan2(Fy, Fx)</div></div>
+    <div class="panel"><h3>Resultante y equilibrante</h3><p>La resultante R reemplaza a todas las fuerzas. La equilibrante E = −R es la fuerza que deja el sistema en equilibrio.</p><div class="eq">Rx = ΣFx &nbsp;&nbsp; Ry = ΣFy &nbsp;&nbsp; E = −R</div></div>
+  </div>
+  <div class="lab">
+    <div class="panel"><h3>Suma y resta</h3><svg id="vec" class="svgbox" viewBox="-210 -210 420 420" role="img" aria-label="Plano con dos vectores y su resultante"></svg></div>
+    <div class="panel stack">
+      <div class="seg" role="group" aria-label="Operación"><button type="button" id="opSum" aria-pressed="true">F₁ + F₂</button><button type="button" id="opRes" aria-pressed="false">F₁ − F₂</button></div>
+      <div class="ctrls">
+        <div class="grp"><div class="grp-t"><span class="sw" style="background:var(--f1)"></span>Fuerza F₁</div>
+          <div class="ctrl"><label for="v1m">Magnitud <output id="v1mo"></output></label><input id="v1m" type="range" min="0" max="100" value="60"></div>
+          <div class="ctrl"><label for="v1a">Ángulo <output id="v1ao"></output></label><input id="v1a" type="range" min="0" max="360" value="30"></div></div>
+        <div class="grp"><div class="grp-t"><span class="sw" style="background:var(--f2)"></span>Fuerza F₂</div>
+          <div class="ctrl"><label for="v2m">Magnitud <output id="v2mo"></output></label><input id="v2m" type="range" min="0" max="100" value="45"></div>
+          <div class="ctrl"><label for="v2a">Ángulo <output id="v2ao"></output></label><input id="v2a" type="range" min="0" max="360" value="120"></div></div>
+      </div>
+      <div class="tw"><table class="t" id="vecT"></table></div>
+      <div class="calc" id="vecCalc"></div>
+    </div>
+  </div>
+  <div class="lab">
+    <div class="panel"><h3>Tres tensores sobre un poste <small>vista en planta</small></h3><svg id="comp" class="svgbox" viewBox="-250 -250 500 500" role="img" aria-label="Tres fuerzas sobre un poste, su resultante y su equilibrante"></svg></div>
+    <div class="panel stack">
+      <div class="ctrls" id="compCtrls"></div>
+      <label class="check"><input type="checkbox" id="compEq"> Mostrar la equilibrante (E = −R)</label>
+      <div class="tw"><table class="t" id="compT"></table></div>
+      <div id="compMsg" style="font-size:15px"></div>
+    </div>
+  </div>
+  <div class="fix"><span class="k">Error frecuente</span><p>Usar atan(Fy/Fx) sin mirar el cuadrante: la calculadora solo da ángulos entre −90° y 90°. Si Fx es negativa, suma 180°.</p></div>
+  <div class="obra"><span class="k">En la obra</span><p>Los postes de energía, las torres de comunicación y los andamios altos llevan vientos (cables tensores). Se reparten para que la resultante sobre el poste sea casi cero; si un viento se afloja, la resultante deja de ser cero y el poste se inclina.</p></div>
+</section>
+
+<section id="u4">
+  <div class="sec-head"><div class="sec-num">04</div><h2>Vectores fuerza en el espacio</h2><div class="sec-tag">Componentes cartesianas · vector posición · vector unitario · ángulos directores</div></div>
+  <p class="obj"><b>Objetivo</b>Expresar en componentes x, y, z la fuerza de un cable definido por dos puntos.</p>
+  <p class="lead">En la obra los cables no están en un plano: un viento sale de lo alto de un poste y llega a un anclaje en el piso. Su fuerza se escribe con el vector unitario de la recta que va del poste al anclaje.</p>
+  <div class="theory">
+    <div class="panel"><h3>Fuerza dirigida por una recta</h3><p>Con A el punto del poste y B el anclaje:</p><div class="eq">r_AB = (xB − xA) i + (yB − yA) j + (zB − zA) k</div><div class="eq">u = r_AB / |r_AB| &nbsp;&nbsp; F = F · u</div></div>
+    <div class="panel"><h3>Ángulos directores</h3><p>Son los ángulos entre la fuerza y cada eje. Sus cosenos son las componentes del vector unitario y cumplen una identidad útil para comprobar.</p><div class="eq">cos α = ux &nbsp; cos β = uy &nbsp; cos γ = uz</div><div class="eq">cos²α + cos²β + cos²γ = 1</div></div>
+  </div>
+  <div class="lab">
+    <div class="panel"><h3>Viento de un poste <small>vista isométrica</small></h3><svg id="v3d" class="svgbox" viewBox="-270 -235 540 390" role="img" aria-label="Poste vertical con un cable tensor anclado al piso en vista isométrica"></svg><p class="cap">El poste va de O al punto A (altura h). El cable jala el poste desde A hacia el anclaje B.</p></div>
+    <div class="panel stack">
+      <div class="ctrls">
+        <div class="ctrl"><label for="t3h">Altura del amarre A, h <output id="t3ho"></output></label><input id="t3h" type="range" min="4" max="20" step="0.5" value="12"></div>
+        <div class="ctrl"><label for="t3x">Anclaje B, coordenada x <output id="t3xo"></output></label><input id="t3x" type="range" min="-12" max="12" step="0.5" value="6"></div>
+        <div class="ctrl"><label for="t3y">Anclaje B, coordenada y <output id="t3yo"></output></label><input id="t3y" type="range" min="-12" max="12" step="0.5" value="4"></div>
+        <div class="ctrl"><label for="t3F">Tensión del cable, F <output id="t3Fo"></output></label><input id="t3F" type="range" min="1" max="30" step="0.5" value="10"></div>
+      </div>
+      <div class="kp" id="t3kp"></div>
+      <div class="calc" id="t3calc"></div>
+    </div>
+  </div>
+  <div class="fix"><span class="k">Error frecuente</span><p>Restar las coordenadas al revés. El vector va <em>desde</em> el punto donde la fuerza actúa (A) <em>hacia</em> donde jala (B): r_AB = B − A.</p></div>
+  <div class="obra"><span class="k">En la obra</span><p>La componente vertical Fz comprime el poste y la horizontal lo empuja hacia el anclaje. Con tres vientos a 120° en planta, las horizontales se cancelan y solo queda compresión en el poste: así se arma una torre arriostrada.</p></div>
+</section>
+
+<!-- ============ PARTE II ============ -->
+<div class="parthead"><b>Parte II</b><h2>Equilibrio</h2></div>
+
+<section id="u5">
+  <div class="sec-head"><div class="sec-num">05</div><h2>Equilibrio de una partícula</h2><div class="sec-tag">Diagrama de cuerpo libre · ΣFx = 0 · ΣFy = 0 · cables y poleas</div></div>
+  <p class="obj"><b>Objetivo</b>Dibujar el diagrama de cuerpo libre de un nudo y hallar las tensiones de los cables que lo sostienen.</p>
+  <p class="lead">Si todas las fuerzas pasan por un punto, basta con dos ecuaciones en el plano. El diagrama de cuerpo libre (DCL) aísla ese punto, borra el entorno y deja solo las fuerzas.</p>
+  <div class="theory">
+    <div class="panel"><h3>Procedimiento</h3><p>1) Aísla el nudo. 2) Dibuja todas las fuerzas, las conocidas y las incógnitas. 3) Descompón las inclinadas. 4) Plantea las dos ecuaciones. 5) Despeja y comprueba.</p><div class="eq">ΣFx = 0 &nbsp;&nbsp; ΣFy = 0</div></div>
+    <div class="panel"><h3>Dos cables y un peso</h3><p>Con α y β medidos desde la horizontal, la solución cerrada es:</p><div class="eq">T₁ = W · cos β / sen(α + β)</div><div class="eq">T₂ = W · cos α / sen(α + β)</div></div>
+  </div>
+  <div class="lab">
+    <div class="panel"><h3>Andamio colgante</h3><svg id="nudo" class="svgbox" viewBox="0 0 600 430" role="img" aria-label="Andamio colgado de un anillo sostenido por dos cables"></svg></div>
+    <div class="panel stack">
+      <div class="ctrls">
+        <div class="ctrl"><label for="nW">Peso del andamio, W <output id="nWo"></output></label><input id="nW" type="range" min="1" max="40" step="0.5" value="12"></div>
+        <div class="ctrl"><label for="nA">Ángulo del cable 1, α <output id="nAo"></output></label><input id="nA" type="range" min="15" max="75" value="45"></div>
+        <div class="ctrl"><label for="nB">Ángulo del cable 2, β <output id="nBo"></output></label><input id="nB" type="range" min="15" max="75" value="45"></div>
+      </div>
+      <div class="kp" id="nkp"></div>
+      <svg id="nudoDcl" class="svgbox" viewBox="0 0 360 230" role="img" aria-label="Diagrama de cuerpo libre del anillo"></svg>
+      <div class="calc" id="ncalc"></div>
+    </div>
+  </div>
+  <div class="fix"><span class="k">Error frecuente</span><p>Dibujar el techo o la losa dentro del DCL. En el DCL el entorno se reemplaza por las fuerzas que hace: aquí, dos tensiones que salen del anillo y el peso.</p></div>
+  <div class="obra"><span class="k">En la obra</span><p>Entre más acostados estén los cables (más cerca de la horizontal), más tensión llevan, aunque el peso sea el mismo. Con α = β = 30° cada cable carga el peso completo; con 60°, solo el 58 %.</p></div>
+</section>
+
+<section id="u6">
+  <div class="sec-head"><div class="sec-num">06</div><h2>Momento y sistemas equivalentes</h2><div class="sec-tag">M = F · d · Varignon · par · resultante de cargas distribuidas</div></div>
+  <p class="obj"><b>Objetivo</b>Calcular el momento de una fuerza y reemplazar una carga distribuida por su resultante.</p>
+  <p class="lead">Una fuerza, además de empujar, hace girar. Esa tendencia es el momento, y depende de la distancia <strong>perpendicular</strong> entre el punto y la línea de acción de la fuerza.</p>
+  <div class="theory">
+    <div class="panel"><h3>Momento en el plano</h3><p>Con (x, y) el punto de aplicación medido desde O. Antihorario es positivo. Si la línea de acción pasa por O, el momento es cero.</p><div class="eq">M_O = F · d = x · Fy − y · Fx</div></div>
+    <div class="panel"><h3>Cargas distribuidas</h3><p>Una carga trapezoidal de w₁ a w₂ en una longitud L se reemplaza por una fuerza igual a su área, aplicada en el centroide del área.</p><div class="eq">R = (w₁ + w₂) · L / 2</div><div class="eq">x̄ = L · (w₁ + 2w₂) / [3 (w₁ + w₂)]</div></div>
+  </div>
+  <div class="lab">
+    <div class="panel"><h3>Momento de una fuerza sobre una barra</h3><svg id="mom" class="svgbox" viewBox="0 0 600 300" role="img" aria-label="Barra con pivote O y una fuerza inclinada con su brazo de palanca"></svg></div>
+    <div class="panel stack">
+      <div class="ctrls">
+        <div class="ctrl"><label for="mF">Fuerza F <output id="mFo"></output></label><input id="mF" type="range" min="0.5" max="10" step="0.5" value="4"></div>
+        <div class="ctrl"><label for="mx">Distancia de O al punto de aplicación, x <output id="mxo"></output></label><input id="mx" type="range" min="0.2" max="2" step="0.05" value="1.5"></div>
+        <div class="ctrl"><label for="mt">Ángulo entre la fuerza y la barra, θ <output id="mto"></output></label><input id="mt" type="range" min="0" max="180" value="60"></div>
+      </div>
+      <div class="kp" id="mkp"></div>
+      <div class="calc" id="mcalc"></div>
+    </div>
+  </div>
+  <div class="lab">
+    <div class="panel"><h3>Resultante de una carga distribuida</h3><svg id="dist" class="svgbox" viewBox="0 0 600 240" role="img" aria-label="Carga trapezoidal sobre una viga y su fuerza resultante"></svg></div>
+    <div class="panel stack">
+      <div class="ctrls">
+        <div class="ctrl"><label for="dw1">Intensidad a la izquierda, w₁ <output id="dw1o"></output></label><input id="dw1" type="range" min="0" max="20" step="0.5" value="4"></div>
+        <div class="ctrl"><label for="dw2">Intensidad a la derecha, w₂ <output id="dw2o"></output></label><input id="dw2" type="range" min="0" max="20" step="0.5" value="10"></div>
+        <div class="ctrl"><label for="dL">Longitud cargada, L <output id="dLo"></output></label><input id="dL" type="range" min="1" max="10" step="0.5" value="6"></div>
+      </div>
+      <div class="kp" id="dkp"></div>
+      <div class="calc" id="dcalc"></div>
+    </div>
+  </div>
+  <div class="fix"><span class="k">Error frecuente</span><p>Medir el brazo hasta el punto donde se aplica la fuerza y no hasta su línea de acción. Si la fuerza es inclinada, usa d = x · sen θ o descompón (Varignon).</p></div>
+  <div class="obra"><span class="k">En la obra</span><p>Por eso una llave larga afloja la tuerca que una corta no puede, y por eso el empuje de tierra sobre un muro de contención, que crece con la profundidad (carga triangular), actúa a un tercio de la altura desde la base.</p></div>
+</section>
+
+<section id="u7">
+  <div class="sec-head"><div class="sec-num">07</div><h2>Equilibrio del cuerpo rígido</h2><div class="sec-tag">Apoyos y reacciones · ΣFx = 0 · ΣFy = 0 · ΣM = 0 · isostaticidad</div></div>
+  <p class="obj"><b>Objetivo</b>Identificar las reacciones de cada apoyo y calcularlas en vigas con cargas puntuales y distribuidas.</p>
+  <p class="lead">Una viga además de no trasladarse no debe girar. Eso agrega una tercera ecuación. Con tres ecuaciones se resuelven como máximo tres reacciones: la estructura es <strong>isostática</strong>.</p>
+  <div class="theory">
+    <div class="panel"><h3>Apoyos</h3><p><b>Rodillo:</b> 1 reacción, perpendicular a la superficie. <b>Pasador:</b> 2 (Ax, Ay). <b>Empotramiento:</b> 3 (Ax, Ay, M). Con r reacciones: r &lt; 3 es inestable, r = 3 isostática y r &gt; 3 hiperestática.</p></div>
+    <div class="panel"><h3>Algoritmo</h3><p>DCL → momentos en el apoyo con más incógnitas → ΣFy → ΣFx → comprobación con momentos en el otro apoyo.</p><div class="eq">ΣM_A = 0 → R_B &nbsp;&nbsp; ΣFy = 0 → R_A</div></div>
+  </div>
+  <div class="lab">
+    <div class="panel"><h3>Viga de concreto <small id="bmTag"></small></h3><svg id="bm" class="svgbox" viewBox="0 0 640 260" role="img" aria-label="Viga con apoyos, cargas y reacciones"></svg>
+      <div class="seg" role="group" aria-label="Esquema de apoyo" id="bmType" style="margin-top:10px"><button type="button" data-t="0" aria-pressed="true">Simplemente apoyada</button><button type="button" data-t="1" aria-pressed="false">Con voladizo</button><button type="button" data-t="2" aria-pressed="false">Empotrada</button></div>
+    </div>
+    <div class="panel stack">
+      <div class="ctrls">
+        <div class="row2">
+          <div class="ctrl"><label for="bL">Longitud L <output id="bLo"></output></label><input id="bL" type="range" min="2" max="12" step="0.5" value="6"></div>
+          <div class="ctrl"><label for="bov">Voladizo <output id="bovo"></output></label><input id="bov" type="range" min="0.5" max="4" step="0.25" value="1.5"></div>
+        </div>
+        <div class="grp"><div class="grp-t"><span class="sw" style="background:var(--accent)"></span>Cargas puntuales</div>
+          <div class="row2">
+            <div class="ctrl"><label for="bP1">P₁ <output id="bP1o"></output></label><input id="bP1" type="range" min="0" max="50" value="20"></div>
+            <div class="ctrl"><label for="bx1">x₁ <output id="bx1o"></output></label><input id="bx1" type="range" min="0" max="100" value="33"></div>
+            <div class="ctrl"><label for="bP2">P₂ <output id="bP2o"></output></label><input id="bP2" type="range" min="0" max="50" value="0"></div>
+            <div class="ctrl"><label for="bx2">x₂ <output id="bx2o"></output></label><input id="bx2" type="range" min="0" max="100" value="80"></div>
+          </div></div>
+        <div class="grp"><div class="grp-t"><span class="sw" style="background:var(--f2)"></span>Carga distribuida (losa, muros, peso propio)</div>
+          <div class="ctrl"><label for="bw">w <output id="bwo"></output></label><input id="bw" type="range" min="0" max="20" step="0.5" value="8"></div>
+          <div class="row2">
+            <div class="ctrl"><label for="bxs">Desde <output id="bxso"></output></label><input id="bxs" type="range" min="0" max="100" value="0"></div>
+            <div class="ctrl"><label for="bxe">Hasta <output id="bxeo"></output></label><input id="bxe" type="range" min="0" max="100" value="100"></div>
+          </div></div>
+      </div>
+      <div class="kp" id="bkp"></div>
+    </div>
+  </div>
+  <div class="panel"><h3>Memoria de cálculo</h3><div class="calc" id="bcalc"></div></div>
+  <div class="fix"><span class="k">Error frecuente</span><p>Dibujar una reacción horizontal en un rodillo, o dejar la carga distribuida en un extremo en vez de su resultante en el centroide.</p></div>
+  <div class="obra"><span class="k">En la obra</span><p>Las reacciones son lo que la viga le entrega a cada columna; con ese número se diseña la columna y, al final, la zapata. Si mueves P hacia un apoyo, ese apoyo carga más.</p></div>
+</section>
+
+<!-- ============ PARTE III ============ -->
+<div class="parthead"><b>Parte III</b><h2>Análisis estructural</h2></div>
+
+<section id="u8">
+  <div class="sec-head"><div class="sec-num">08</div><h2>Armaduras</h2><div class="sec-tag">Método de nudos · método de secciones · barras de fuerza cero · b + r = 2j</div></div>
+  <p class="obj"><b>Objetivo</b>Resolver una armadura plana, clasificar cada barra en tensión o compresión y comprobar con el método de secciones.</p>
+  <p class="lead">Una armadura son barras rectas unidas en nudos que forman triángulos. Si las cargas llegan solo a los nudos, cada barra trabaja únicamente a lo largo de su eje: o se estira (tensión) o se acorta (compresión).</p>
+  <div class="theory">
+    <div class="panel"><h3>Método de nudos</h3><p>Cada nudo es una partícula: 2 ecuaciones por nudo, 2j en total, para las b barras y las r reacciones. El laboratorio arma esas 2j ecuaciones y las resuelve a la vez (eliminación gaussiana).</p><div class="eq">b + r = 2j → isostática</div></div>
+    <div class="panel"><h3>Método de secciones</h3><p>Se corta la armadura y se toma una parte como cuerpo rígido. La fuerza en un cordón es el momento de la "viga equivalente" en el nudo opuesto dividido por la altura.</p><div class="eq">F_cordón = M_nudo / h</div></div>
+  </div>
+  <div class="panel"><h3>Cercha de puente o cubierta <small id="trTag"></small></h3><svg id="tr" class="svgbox" viewBox="0 0 640 300" role="img" aria-label="Armadura con barras coloreadas según tensión y compresión"></svg>
+    <p class="cap"><span class="tn">■ tensión</span> · <span class="cp">■ compresión</span> · gris punteado = fuerza cero. El grosor es proporcional a la fuerza.</p></div>
+  <div class="lab">
+    <div class="panel stack">
+      <div class="seg" role="group" aria-label="Tipo de armadura" id="trType"><button type="button" data-t="warren" aria-pressed="true">Warren</button><button type="button" data-t="pratt" aria-pressed="false">Pratt</button><button type="button" data-t="howe" aria-pressed="false">Howe</button></div>
+      <div class="seg" role="group" aria-label="Número de paneles" id="trN"><button type="button" data-n="4" aria-pressed="true">4 paneles</button><button type="button" data-n="6" aria-pressed="false">6 paneles</button><button type="button" data-n="8" aria-pressed="false">8 paneles</button></div>
+      <div class="ctrls">
+        <div class="row2">
+          <div class="ctrl"><label for="trL">Luz L <output id="trLo"></output></label><input id="trL" type="range" min="6" max="30" value="12"></div>
+          <div class="ctrl"><label for="trH">Altura h <output id="trHo"></output></label><input id="trH" type="range" min="1" max="6" step="0.25" value="3"></div>
+        </div>
+        <div class="ctrl"><label for="trW">Carga repartida por cercha, w <output id="trWo"></output></label><input id="trW" type="range" min="0" max="20" step="0.5" value="6"></div>
+        <div class="row2">
+          <div class="ctrl"><label for="trP">Carga puntual adicional <output id="trPo"></output></label><input id="trP" type="range" min="0" max="60" step="5" value="0"></div>
+          <div class="ctrl"><label for="trK">En el nudo inferior <output id="trKo"></output></label><input id="trK" type="range" min="1" max="7" value="2"></div>
+        </div>
+      </div>
+      <div class="kp" id="trkp"></div>
+      <div class="calc" id="trcalc"></div>
+    </div>
+    <div class="panel"><h3>Fuerzas en las barras</h3><div class="tw" id="trTab" style="max-height:420px;overflow-y:auto"></div></div>
+  </div>
+  <div class="fix"><span class="k">Error frecuente</span><p>Cambiar el sentido supuesto a mitad del problema. Supón siempre tensión: si el resultado sale negativo, la barra está en compresión. No es un error, es información.</p></div>
+  <div class="obra"><span class="k">En la obra</span><p>En una cercha de puente el cordón superior se comprime y el inferior se estira. Por eso el superior se revisa por pandeo y el inferior puede ser un perfil más liviano. Subir la altura h reduce las fuerzas en los cordones: mírelo en el laboratorio.</p></div>
+</section>
+
+<section id="u9">
+  <div class="sec-head"><div class="sec-num">09</div><h2>Fuerzas internas en vigas</h2><div class="sec-tag">N, V, M · método del corte · dV/dx = −w · dM/dx = V</div></div>
+  <p class="obj"><b>Objetivo</b>Hallar la fuerza cortante y el momento flector en cualquier sección y dibujar sus diagramas.</p>
+  <p class="lead">La viga no falla por las reacciones sino por lo que pasa dentro de ella. Un corte imaginario en x deja ver tres fuerzas internas: la normal N, la cortante V y el momento flector M. Este laboratorio usa <strong>la misma viga de la unidad 07</strong>.</p>
+  <div class="theory">
+    <div class="panel"><h3>Convención de signos</h3><p>M positivo dobla la viga cóncava hacia arriba (fibras de abajo en tensión). V positivo hace girar el tramo en sentido horario. Se dibujan N, V y M positivos y el signo del resultado corrige.</p></div>
+    <div class="panel"><h3>Relaciones diferenciales</h3><p>La pendiente de V es −w y la de M es V. Por eso el momento máximo está donde V cruza por cero, y en un apoyo simple M = 0.</p><div class="eq">dV/dx = −w &nbsp;&nbsp; dM/dx = V</div></div>
+  </div>
+  <div class="panel">
+    <h3>Diagramas de la viga de la unidad 07</h3>
+    <div class="ctrl"><label for="cx">Posición del corte, x <output id="cxo"></output></label><input id="cx" type="range" min="0" max="1000" value="400"></div>
+    <svg id="vm" class="svgbox" viewBox="0 0 640 420" role="img" aria-label="Diagramas de fuerza cortante y momento flector"></svg>
+    <div class="kp" id="vmkp" style="margin-top:10px"></div>
+  </div>
+  <div class="fix"><span class="k">Error frecuente</span><p>Buscar el momento máximo donde está la carga más grande. Está donde la cortante cambia de signo.</p></div>
+  <div class="obra"><span class="k">En la obra</span><p>El diagrama de M dice dónde va el acero longitudinal (abajo en el centro de una viga apoyada, arriba en el empotramiento de un voladizo). El de V dice dónde van los estribos más juntos: cerca de los apoyos.</p></div>
+</section>
+
+<section id="u10">
+  <div class="sec-head"><div class="sec-num">10</div><h2>Fricción seca</h2><div class="sec-tag">Ley de Coulomb · movimiento inminente · ángulo óptimo de tiro</div></div>
+  <p class="obj"><b>Objetivo</b>Decidir si un cuerpo se desliza y hallar la fuerza mínima para moverlo.</p>
+  <p class="lead">La fricción se opone al deslizamiento y crece con la fuerza normal hasta un máximo. Si la fuerza aplicada supera ese máximo, el cuerpo se mueve.</p>
+  <div class="theory">
+    <div class="panel"><h3>Ley de Coulomb</h3><p>F_máx es la fricción en el instante en que el cuerpo está a punto de moverse (movimiento inminente). μs depende de las dos superficies.</p><div class="eq">F ≤ F_máx = μs · N</div></div>
+    <div class="panel"><h3>Tirar con un ángulo</h3><p>Al jalar a θ sobre la horizontal, la componente vertical reduce la normal. La fuerza para iniciar el movimiento y su mínimo son:</p><div class="eq">P = μs · W / (cos θ + μs · sen θ)</div><div class="eq">mínimo en tan θ = μs → P_mín = μs · W / √(1 + μs²)</div></div>
+  </div>
+  <div class="lab">
+    <div class="panel"><h3>Arrastrar un bloque de concreto</h3><svg id="fr" class="svgbox" viewBox="0 0 600 220" role="img" aria-label="Bloque jalado con un cable inclinado sobre el piso"></svg>
+      <svg id="frc" class="svgbox" viewBox="0 0 600 250" role="img" aria-label="Fuerza necesaria según el ángulo de tiro" style="margin-top:8px"></svg></div>
+    <div class="panel stack">
+      <div class="ctrls">
+        <div class="ctrl"><label for="fW">Peso del bloque, W <output id="fWo"></output></label><input id="fW" type="range" min="1" max="40" step="0.5" value="10"></div>
+        <div class="ctrl"><label for="fmu">Coeficiente de fricción estática, μs <output id="fmuo"></output></label><input id="fmu" type="range" min="0.1" max="0.9" step="0.01" value="0.45"></div>
+        <div class="chips" id="fmuEx"></div>
+        <div class="ctrl"><label for="ft">Ángulo del cable, θ <output id="fto"></output></label><input id="ft" type="range" min="0" max="60" value="10"></div>
+        <div class="ctrl"><label for="fP">Fuerza aplicada, P <output id="fPo"></output></label><input id="fP" type="range" min="0" max="30" step="0.25" value="4"></div>
+      </div>
+      <div id="frStatus"></div>
+      <div class="kp" id="frkp"></div>
+      <div class="calc" id="frcalc"></div>
+    </div>
+  </div>
+  <div class="fix"><span class="k">Error frecuente</span><p>Pensar que lo mejor es jalar horizontal. Un poco de inclinación ayuda porque alivia la normal y con ella la fricción; demasiada desperdicia fuerza levantando. El óptimo está en tan θ = μs.</p></div>
+  <div class="obra"><span class="k">En la obra</span><p>Arrastrar prefabricados, deslizar una formaleta o revisar si un muro de contención se desliza sobre su base usan la misma ley. Los valores de μs del laboratorio son típicos y aproximados; en un diseño se toman de ensayos o de la norma.</p></div>
+</section>
+
+<!-- ============ PARTE IV ============ -->
+<div class="parthead"><b>Parte IV</b><h2>Geometría y síntesis</h2></div>
+
+<section id="u11">
+  <div class="sec-head"><div class="sec-num">11</div><h2>Centroide y momento de inercia</h2><div class="sec-tag">Áreas compuestas · ȳ = ΣAy / ΣA · teorema de ejes paralelos</div></div>
+  <p class="obj"><b>Objetivo</b>Ubicar el centroide de una sección compuesta y calcular su momento de inercia respecto al eje centroidal.</p>
+  <p class="lead">Una viga T o un perfil I se dividen en rectángulos. El centroide es el promedio de sus centroides pesado por el área, y el momento de inercia suma el de cada rectángulo trasladado al eje común.</p>
+  <div class="theory">
+    <div class="panel"><h3>Centroide</h3><p>Con y medido desde la base de la sección:</p><div class="eq">ȳ = Σ(Aᵢ · yᵢ) / ΣAᵢ</div></div>
+    <div class="panel"><h3>Ejes paralelos (Steiner)</h3><p>Cada rectángulo aporta su inercia propia b·h³/12 más su área por la distancia al eje centroidal al cuadrado.</p><div class="eq">I = Σ(Īᵢ + Aᵢ · dᵢ²) &nbsp;&nbsp; dᵢ = yᵢ − ȳ</div></div>
+  </div>
+  <div class="lab">
+    <div class="panel"><h3>Sección transversal <small id="secTag"></small></h3><svg id="sec" class="svgbox" viewBox="0 0 420 380" role="img" aria-label="Sección transversal compuesta con su centroide"></svg>
+      <div class="seg" role="group" aria-label="Forma de la sección" id="secType" style="margin-top:10px"><button type="button" data-s="T" aria-pressed="true">Viga T</button><button type="button" data-s="I" aria-pressed="false">Perfil I</button><button type="button" data-s="R" aria-pressed="false">Rectangular</button></div></div>
+    <div class="panel stack">
+      <div class="ctrls">
+        <div class="row2">
+          <div class="ctrl"><label for="sbf">Ancho del ala, bf <output id="sbfo"></output></label><input id="sbf" type="range" min="10" max="120" value="80"></div>
+          <div class="ctrl"><label for="stf">Espesor del ala, tf <output id="stfo"></output></label><input id="stf" type="range" min="2" max="25" value="10"></div>
+          <div class="ctrl"><label for="sbw">Ancho del alma, bw <output id="sbwo"></output></label><input id="sbw" type="range" min="2" max="60" value="25"></div>
+          <div class="ctrl"><label for="sh">Altura total, h <output id="sho"></output></label><input id="sh" type="range" min="15" max="100" value="50"></div>
+        </div>
+      </div>
+      <div class="kp" id="skp"></div>
+      <div class="tw"><table class="t" id="sTab"></table></div>
+      <div class="calc" id="scalc"></div>
+    </div>
+  </div>
+  <div class="fix"><span class="k">Error frecuente</span><p>Sumar las inercias b·h³/12 de cada parte sin el término A·d². Ese término suele ser el más grande.</p></div>
+  <div class="obra"><span class="k">En la obra</span><p>Cuando la losa se funde junto con la viga, trabajan como una viga T: el ala sube el centroide y aumenta mucho la inercia. Con la inercia y el momento de la unidad 09 se estima el esfuerzo de flexión σ = M · c / I, que verás en Resistencia de materiales.</p></div>
+</section>
+
+<section id="u12">
+  <div class="sec-head"><div class="sec-num">12</div><h2>Caso integrador: izar una viga</h2><div class="sec-tag">Unidades + vectores + equilibrio de partícula + revisión de capacidad</div></div>
+  <p class="obj"><b>Objetivo</b>Aplicar en una sola maniobra lo aprendido: peso propio, descomposición, equilibrio y comparación contra la capacidad del aparejo.</p>
+  <p class="lead">Una grúa levanta una viga prefabricada con dos eslingas. ¿Cuánto tiene que aguantar cada eslinga, y alcanza su capacidad de trabajo? Cambia el ángulo: entre más acostadas las eslingas, más tensión, aunque la viga pese lo mismo.</p>
+  <div class="lab">
+    <div class="panel"><svg id="lift" class="svgbox" viewBox="0 0 640 340" role="img" aria-label="Grúa izando una viga con dos eslingas"></svg></div>
+    <div class="panel stack">
+      <div class="ctrls">
+        <div class="ctrl"><label for="lL">Largo de la viga <output id="lLo"></output></label><input id="lL" type="range" min="2" max="10" step="0.5" value="6"></div>
+        <div class="row2">
+          <div class="ctrl"><label for="lb">Ancho b <output id="lbo"></output></label><input id="lb" type="range" min="20" max="50" step="5" value="30"></div>
+          <div class="ctrl"><label for="lh">Alto h <output id="lho"></output></label><input id="lh" type="range" min="30" max="80" step="5" value="50"></div>
+        </div>
+        <div class="ctrl"><label for="lt">Ángulo de la eslinga con la horizontal, θ <output id="lto"></output></label><input id="lt" type="range" min="15" max="90" value="60"></div>
+        <div class="ctrl"><label for="lwll">Capacidad de trabajo de cada eslinga (WLL) <output id="lwllo"></output></label><input id="lwll" type="range" min="5" max="80" step="1" value="20"></div>
+      </div>
+      <div id="liftStatus" class="stack" style="gap:6px"></div>
+      <div class="kp" id="lkp"></div>
+    </div>
+  </div>
+  <div class="lab">
+    <div class="panel"><h3>DCL del gancho</h3><svg id="fbd" class="svgbox" viewBox="0 0 360 245" role="img" aria-label="Fuerzas sobre el gancho"></svg></div>
+    <div class="panel"><h3>Memoria de cálculo</h3><div class="calc" id="liftCalc"></div></div>
+  </div>
+  <div class="obra"><span class="k">En la obra</span><p>Las guías de izaje suelen recomendar trabajar cerca de 60° y no bajar de 30°: a 30° cada eslinga ya carga el peso completo de la viga y por debajo la tensión se dispara. La componente horizontal T · cos θ además comprime la viga de punta a punta. El plan de izaje real lo firma un responsable calificado.</p></div>
+</section>
+
+<section id="banco">
+  <div class="sec-head"><div class="sec-num">✎</div><h2>Banco de ejercicios</h2><div class="sec-tag">Problemas generados con datos nuevos cada vez · tolerancia del 1 %</div></div>
+  <p class="lead">Escoge un tema, resuelve en el cuaderno y escribe tu resultado. Después de dos intentos aparece la solución completa.</p>
+  <div class="panel quiz">
+    <div class="ctrl"><label for="qTopic">Tema</label><select id="qTopic"></select></div>
+    <p class="q" id="qText"></p>
+    <form class="ans" id="qForm" autocomplete="off"><label for="qIn" class="mono" id="qUnit" style="font-size:13px;color:var(--muted)"></label><input id="qIn" type="text" inputmode="decimal" placeholder="0,00"><button class="btn" type="submit">Comprobar</button><button class="btn alt" type="button" id="qNew">Otro problema</button></form>
+    <div class="fb" id="qFb" aria-live="polite"></div>
+    <div class="mono" id="qScore" style="font-size:13px;color:var(--muted)"></div>
+  </div>
+</section>
+
+<section id="verif">
+  <div class="sec-head"><div class="sec-num">✓</div><h2>Verificación del motor de cálculo</h2><div class="sec-tag">Cada fila corre el solucionador del prototipo y lo compara con la fórmula analítica</div></div>
+  <p class="lead">Los laboratorios de vigas y armaduras usan solucionadores generales. Esta tabla se calcula al abrir la página: si el motor cambiara y dejara de coincidir con la teoría, se vería aquí.</p>
+  <div class="panel"><div class="tw"><table class="t" id="vTab"></table></div><p id="vMsg" style="margin-top:10px;font-size:15px"></p></div>
+  <div class="panel">
+    <h3>Alcance y referencias</h3>
+    <p style="font-size:15px;margin-bottom:10px">Modelo plano (2D) salvo la unidad 04, cuerpo rígido y cargas estáticas. No incluye deformaciones, pandeo, viento ni sismo. Las cargas son supuestos académicos: un diseño real usa la NSR-10 para edificaciones o la CCP-14 para puentes, y lo firma un ingeniero.</p>
+    <ul class="refs">
+      <li>Beer, F. P., Johnston, E. R., Mazurek, D. F. y Cornwell, P. J. (2013). <i>Mecánica vectorial para ingenieros: Estática</i> (10.ª ed.). McGraw-Hill.</li>
+      <li>Hibbeler, R. C. (2016). <i>Ingeniería mecánica: Estática</i> (14.ª ed.). Pearson Educación.</li>
+      <li>Ministerio de Ambiente, Vivienda y Desarrollo Territorial (2010). <i>Reglamento colombiano de construcción sismo resistente NSR-10</i>.</li>
+    </ul>
+  </div>
+  <footer><span>Prototipo de curso de Estática · Jerson Enrique Sinisterra García · 2026.</span><span>Herramienta de estudio: no reemplaza el diseño ni la firma de un ingeniero.</span></footer>
+</section>
+</main>
+
+<script>
+(function(){
+'use strict';
+const NS='http://www.w3.org/2000/svg';
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function txt(g,x,y,s,cls,anchor){const t=el('text',{x,y,'text-anchor':anchor||'start'},g);if(cls)t.setAttribute('class',cls);t.textContent=s;return t;}
+function arrow(g,x1,y1,x2,y2,cls,w,head,extra){
+  w=w||2.5;head=head||10;const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy);if(L<0.5)return;
+  const ux=dx/L,uy=dy/L,h=Math.min(head,L*0.6),bx=x2-ux*h,by=y2-uy*h;
+  el('line',{x1,y1,x2:bx,y2:by,class:cls+' stroke'+(extra?' '+extra:''),'stroke-width':w},g);
+  el('polygon',{points:`${x2},${y2} ${bx-uy*h*.45},${by+ux*h*.45} ${bx+uy*h*.45},${by-ux*h*.45}`,class:cls+' fill'+(extra&&extra.includes('faint')?' faint':'')},g);
+}
+const fmt=(v,d=2)=>(Math.abs(v)<5e-10?0:v).toLocaleString('es-CO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const sgn=(v,d=2)=>(v< -5e-10?'−':'')+fmt(Math.abs(v),d);
+const fmtN=v=>{const a=Math.abs(v);const d=a>=1000?1:a>=1?3:6;return (+v.toPrecision(8)).toLocaleString('es-CO',{maximumFractionDigits:d});};
+const rad=d=>d*Math.PI/180, deg=r=>r*180/Math.PI;
+const ang360=(x,y)=>{let a=deg(Math.atan2(y,x));if(a<0)a+=360;return a;};
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function bind(ids,fn){ids.forEach(i=>{$(i).addEventListener('input',fn);$(i).addEventListener('change',fn);});}
+function kp(id,items){$(id).innerHTML=items.map(([k,v,c])=>`<div><span>${k}</span><b${c?` style="color:var(${c})"`:''}>${v}</b></div>`).join('');}
+function segBind(id,attr,fn){const g=$(id);g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));fn(b.getAttribute(attr));});}
+const segVal=(id,attr)=>$(id).querySelector('[aria-pressed="true"]').getAttribute(attr);
+function ground(g,x0,x1,y){el('line',{x1:x0,y1:y,x2:x1,y2:y,class:'gnd'},g);for(let x=x0;x<x1;x+=12)el('line',{x1:x+8,y1:y,x2:x,y2:y+8,class:'gnd'},g);}
+function pin(g,x,y){el('polygon',{points:`${x},${y} ${x-13},${y+22} ${x+13},${y+22}`,class:'sup'},g);ground(g,x-20,x+22,y+22);}
+function roller(g,x,y){el('polygon',{points:`${x},${y} ${x-13},${y+16} ${x+13},${y+16}`,class:'sup'},g);el('circle',{cx:x-6,cy:y+20,r:4,class:'sup'},g);el('circle',{cx:x+6,cy:y+20,r:4,class:'sup'},g);ground(g,x-20,x+22,y+25);}
+function nice(mn,mx,n){const span=(mx-mn)||1,raw=span/(n||4),mag=Math.pow(10,Math.floor(Math.log10(raw))),r=raw/mag,st=(r<1.5?1:r<3.5?2:r<7.5?5:10)*mag,t=[];for(let v=Math.ceil(mn/st-1e-9)*st;v<=mx+1e-9;v+=st)t.push(Math.abs(v)<1e-12?0:v);return t;}
+
+/* ===== 01 · tira y afloja ===== */
+function drawTug(){
+  const L=+$('tugL').value,R=+$('tugR').value;$('tugLo').textContent=L+' N';$('tugRo').textContent=R+' N';
+  const s=$('tug');s.innerHTML='';ground(s,20,580,120);
+  el('rect',{x:260,y:70,width:80,height:50,class:'box'},s);txt(s,300,100,'bloque','m','middle');
+  arrow(s,260,95,260-L*1.9,95,'c1',3,12);txt(s,Math.max(30,260-L*1.9),82,L+' N','c1 fill','start');
+  arrow(s,340,95,340+R*1.9,95,'c2',3,12);txt(s,Math.min(570,340+R*1.9),82,R+' N','c2 fill','end');
+  const net=R-L,t=el('text',{x:300,y:156,'text-anchor':'middle',class:'big'},s);
+  if(net===0){t.textContent='ΣF = 0 → equilibrio: ESTÁTICA';t.setAttribute('class','big ce fill');}
+  else{t.textContent=`ΣF = ${Math.abs(net)} N hacia la ${net>0?'derecha':'izquierda'} → se acelera: DINÁMICA`;t.setAttribute('class','big cr fill');}
+}
+bind(['tugL','tugR'],drawTug);
+
+/* ===== 02 · conversiones ===== */
+const U={
+  longitud:{m:1,cm:.01,mm:.001,'pie (ft)':.3048,'pulgada (in)':.0254},
+  fuerza:{N:1,kN:1000,kgf:9.80665,lbf:4.4482216,kip:4448.2216,'t (tonelada fuerza)':9806.65},
+  masa:{kg:1,'t (tonelada)':1000,lb:.45359237},
+  presion:{Pa:1,kPa:1000,MPa:1e6,psi:6894.757,'kgf/cm²':98066.5,ksi:6894757},
+  momento:{'N·m':1,'kN·m':1000,'kgf·m':9.80665,'lbf·ft':1.3558179,'kip·ft':1355.8179}
+};
+const EX=[['Varilla de 1/2" a mm','longitud','pulgada (in)','mm',0.5],['Concreto 3 000 psi a MPa','presion','psi','MPa',3000],['Acero fy 60 ksi a MPa','presion','ksi','MPa',60],['Bulto de cemento 50 kg a lb','masa','kg','lb',50],['1 000 kgf a kN','fuerza','kgf','kN',1000],['Momento 50 kip·ft a kN·m','momento','kip·ft','kN·m',50]];
+function fillUnits(c,f,t){const ks=Object.keys(U[c]);[$('cvFrom'),$('cvTo')].forEach((s,i)=>{s.innerHTML='';ks.forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;s.appendChild(o);});s.value=(i?t:f)||ks[i?Math.min(2,ks.length-1):0];});}
+function conv(){
+  const c=$('cvCat').value,f=$('cvFrom').value,t=$('cvTo').value,v=parseFloat(String($('cvVal').value).replace(',','.'));
+  if(isNaN(v)){$('cvOut').textContent='—';$('cvCalc').textContent='Escribe un número para convertir.';return;}
+  const k=U[c][f]/U[c][t],r=v*k;
+  $('cvOut').innerHTML=`${fmtN(r)}<small>${t}</small>`;
+  $('cvCalc').innerHTML=`<span class="c">1 ${f} = ${fmtN(k)} ${t}</span><br>${fmtN(v)} ${f} × ${fmtN(k)} = <b>${fmtN(r)} ${t}</b>`;
+}
+$('cvCat').addEventListener('change',()=>{fillUnits($('cvCat').value);conv();});
+['cvFrom','cvTo'].forEach(i=>$(i).addEventListener('change',conv));$('cvVal').addEventListener('input',conv);
+EX.forEach(e=>{const b=document.createElement('button');b.type='button';b.textContent=e[0];b.onclick=()=>{$('cvCat').value=e[1];fillUnits(e[1],e[2],e[3]);$('cvVal').value=e[4];conv();};$('cvEx').appendChild(b);});
+
+/* plano cartesiano */
+function plane(svg,R){
+  svg.innerHTML='';const g=el('g',{},svg);
+  for(let v=-Math.floor(R/50)*50;v<=R;v+=50){el('line',{x1:v,y1:-R,x2:v,y2:R,class:'gridl'},g);el('line',{x1:-R,y1:v,x2:R,y2:v,class:'gridl'},g);}
+  el('line',{x1:-R,y1:0,x2:R,y2:0,class:'axis'},g);el('line',{x1:0,y1:-R,x2:0,y2:R,class:'axis'},g);
+  txt(g,R-6,-6,'x','m','end');txt(g,6,-R+14,'y','m');txt(g,-R+4,R-6,'cuadrícula = 50 N','m');
+  return g;
+}
+
+/* ===== 03 · suma y resta ===== */
+let op='suma';
+function setOp(o){op=o;$('opSum').setAttribute('aria-pressed',o==='suma');$('opRes').setAttribute('aria-pressed',o==='resta');drawVec();}
+$('opSum').onclick=()=>setOp('suma');$('opRes').onclick=()=>setOp('resta');
+function drawVec(){
+  const m1=+$('v1m').value,a1=+$('v1a').value,m2=+$('v2m').value,a2=+$('v2a').value;
+  $('v1mo').textContent=m1+' N';$('v1ao').textContent=a1+'°';$('v2mo').textContent=m2+' N';$('v2ao').textContent=a2+'°';
+  const x1=m1*Math.cos(rad(a1)),y1=m1*Math.sin(rad(a1)),x2=m2*Math.cos(rad(a2)),y2=m2*Math.sin(rad(a2));
+  const s=op==='suma'?1:-1,rx=x1+s*x2,ry=y1+s*y2,R=Math.hypot(rx,ry),aR=ang360(rx,ry);
+  const g=plane($('vec'),210);
+  el('line',{x1:0,y1:0,x2:x1,y2:0,class:'c1 stroke dash','stroke-width':1.5},g);
+  el('line',{x1:x1,y1:0,x2:x1,y2:-y1,class:'c1 stroke dash','stroke-width':1.5},g);
+  arrow(g,0,0,x2,-y2,'c2',2,9,'faint');arrow(g,0,0,x1,-y1,'c1',3);arrow(g,x1,-y1,x1+s*x2,-(y1+s*y2),'c2',3);arrow(g,0,0,rx,-ry,'cr',4,13);
+  txt(g,x1/2+6,-y1/2-6,'F₁','c1 fill big');txt(g,x1+s*x2/2+6,-(y1+s*y2/2)-6,s>0?'F₂':'−F₂','c2 fill big');
+  if(R>4)txt(g,rx+(rx>=0?8:-8),-ry+(ry>=0?-6:16),'R','cr fill big',rx>=0?'start':'end');
+  const dA=rad(a2-a1),Rc=Math.sqrt(Math.max(0,m1*m1+m2*m2+2*s*m1*m2*Math.cos(dA)));
+  $('vecT').innerHTML=`<tr><th></th><th>x (N)</th><th>y (N)</th></tr><tr><td>F₁</td><td>${fmt(x1)}</td><td>${fmt(y1)}</td></tr><tr><td>${s>0?'F₂':'−F₂'}</td><td>${fmt(s*x2)}</td><td>${fmt(s*y2)}</td></tr><tr class="sum"><td>R</td><td>${fmt(rx)}</td><td>${fmt(ry)}</td></tr>`;
+  $('vecCalc').innerHTML=`R = √(${fmt(rx)}² + ${fmt(ry)}²) = <b>${fmt(R)} N</b><br>θ<sub>R</sub> = atan2(Ry, Rx) = <b>${fmt(aR,1)}°</b><br><span class="c">Comprobación con la ley de cosenos: R = √(F₁² + F₂² ${s>0?'+':'−'} 2F₁F₂ cos Δθ) = ${fmt(Rc)} N</span><br><span class="c">Suma "a ciegas": ${m1} ${s>0?'+':'−'} ${m2} = ${s>0?m1+m2:m1-m2} N ≠ ${fmt(R)} N</span>`;
+}
+bind(['v1m','v1a','v2m','v2a'],drawVec);
+
+const CF=[{n:'Tensor A',c:'c1',col:'--f1',m:70,a:20},{n:'Tensor B',c:'c2',col:'--f2',m:60,a:150},{n:'Tensor C',c:'c3',col:'--f3',m:55,a:255}];
+CF.forEach((f,i)=>{const d=document.createElement('div');d.className='grp';
+  d.innerHTML=`<div class="grp-t"><span class="sw" style="background:var(${f.col})"></span>${f.n}</div><div class="ctrl"><label for="cm${i}">Tensión <output id="cm${i}o"></output></label><input id="cm${i}" type="range" min="0" max="80" value="${f.m}"></div><div class="ctrl"><label for="ca${i}">Dirección <output id="ca${i}o"></output></label><input id="ca${i}" type="range" min="0" max="360" value="${f.a}"></div>`;
+  $('compCtrls').appendChild(d);});
+function drawComp(){
+  let sx=0,sy=0;const rows=[],pts=[];const g=plane($('comp'),250);
+  CF.forEach((f,i)=>{f.m=+$('cm'+i).value;f.a=+$('ca'+i).value;$('cm'+i+'o').textContent=f.m+' N';$('ca'+i+'o').textContent=f.a+'°';
+    const x=f.m*Math.cos(rad(f.a)),y=f.m*Math.sin(rad(f.a));pts.push([x,y]);sx+=x;sy+=y;rows.push([f.n,x,y]);});
+  let cx=0,cy=0;CF.forEach((f,i)=>{const [x,y]=pts[i];arrow(g,cx,-cy,cx+x,-(cy+y),f.c,1.5,8,'faint');cx+=x;cy+=y;});
+  CF.forEach((f,i)=>{const [x,y]=pts[i];arrow(g,0,0,x,-y,f.c,3);if(f.m>8)txt(g,x*1.08+(x>=0?4:-4),-y*1.08+4,f.n.slice(-1),f.c+' fill big',x>=0?'start':'end');});
+  const R=Math.hypot(sx,sy),aR=ang360(sx,sy);
+  arrow(g,0,0,sx,-sy,'cr',4,13);if(R>6)txt(g,sx+(sx>=0?8:-8),-sy+(sy>=0?-6:16),'R','cr fill big',sx>=0?'start':'end');
+  const showE=$('compEq').checked;
+  if(showE&&R>1){arrow(g,0,0,-sx,sy,'ce',3,12,'dash');txt(g,-sx+(sx<=0?8:-8),sy+(sy<=0?-6:16),'E = −R','ce fill big',sx<=0?'start':'end');}
+  el('circle',{cx:0,cy:0,r:9,class:'sup'},g);
+  let h='<tr><th></th><th>x (N)</th><th>y (N)</th></tr>';rows.forEach(r=>h+=`<tr><td>${r[0]}</td><td>${fmt(r[1])}</td><td>${fmt(r[2])}</td></tr>`);
+  $('compT').innerHTML=h+`<tr class="sum"><td>R = Σ</td><td>${fmt(sx)}</td><td>${fmt(sy)}</td></tr>`;
+  $('compMsg').innerHTML=R<3?`<span class="pill ok">Poste en equilibrio</span> La resultante es casi cero (${fmt(R,1)} N).`
+   :`<span class="pill warn">R = ${fmt(R,1)} N a ${fmt(aR,0)}°</span> El poste tiende a inclinarse hacia ${fmt(aR,0)}°. ${showE?`Un cuarto tensor de ${fmt(R,1)} N a ${fmt((aR+180)%360,0)}° lo equilibra.`:'Activa la equilibrante para ver qué fuerza lo compensa.'}`;
+}
+bind(['cm0','ca0','cm1','ca1','cm2','ca2','compEq'],drawComp);
+
+/* ===== 04 · vectores 3D ===== */
+function draw3d(){
+  const h=+$('t3h').value,xB=+$('t3x').value,yB=+$('t3y').value,F=+$('t3F').value;
+  $('t3ho').textContent=fmt(h,1)+' m';$('t3xo').textContent=sgn(xB,1)+' m';$('t3yo').textContent=sgn(yB,1)+' m';$('t3Fo').textContent=fmt(F,1)+' kN';
+  const k=9.5,P=(x,y,z)=>[(x-y)*0.866*k,(x+y)*0.5*k-z*k];
+  const s=$('v3d');s.innerHTML='';
+  for(let v=-12;v<=12;v+=4){const a=P(v,-12,0),b=P(v,12,0),c=P(-12,v,0),d=P(12,v,0);el('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],class:'gridl'},s);el('line',{x1:c[0],y1:c[1],x2:d[0],y2:d[1],class:'gridl'},s);}
+  const O=P(0,0,0),ax=[[P(14,0,0),'x'],[P(0,14,0),'y'],[P(0,0,h+3.5),'z']];
+  ax.forEach(([p,n])=>{arrow(s,O[0],O[1],p[0],p[1],'cg',1.5,8);txt(s,p[0]+(n==='y'?-8:6),p[1]+(n==='z'?-4:4),n,'m',n==='y'?'end':'start');});
+  const A=P(0,0,h),B=P(xB,yB,0),Bx=P(xB,0,0),By=P(0,yB,0);
+  el('line',{x1:B[0],y1:B[1],x2:Bx[0],y2:Bx[1],class:'cg stroke dash','stroke-width':1},s);
+  el('line',{x1:B[0],y1:B[1],x2:By[0],y2:By[1],class:'cg stroke dash','stroke-width':1},s);
+  el('line',{x1:O[0],y1:O[1],x2:A[0],y2:A[1],class:'ci stroke','stroke-width':7},s);
+  el('line',{x1:A[0],y1:A[1],x2:B[0],y2:B[1],class:'cg stroke','stroke-width':2},s);
+  const rx=xB,ry=yB,rz=-h,r=Math.hypot(rx,ry,rz),ux=rx/r,uy=ry/r,uz=rz/r;
+  const la=Math.min(r*0.55,F*0.45),Ft=P(ux*la,uy*la,h+uz*la);
+  arrow(s,A[0],A[1],Ft[0],Ft[1],'cr',4,13);
+  el('circle',{cx:B[0],cy:B[1],r:5,class:'ci fill'},s);el('circle',{cx:A[0],cy:A[1],r:5,class:'cr fill'},s);
+  txt(s,A[0]-10,A[1]-6,'A','big halo','end');txt(s,B[0]+8,B[1]+16,`B (${sgn(xB,1)}; ${sgn(yB,1)}; 0)`,'big halo');txt(s,O[0]-8,O[1]+16,'O','m','end');
+  txt(s,Ft[0]+8,Ft[1]-6,`F = ${fmt(F,1)} kN`,'cr fill big halo');
+  const Fx=F*ux,Fy=F*uy,Fz=F*uz,al=deg(Math.acos(ux)),be=deg(Math.acos(uy)),ga=deg(Math.acos(uz)),Fh=F*Math.hypot(ux,uy);
+  kp('t3kp',[['Fx',sgn(Fx)+' kN','--f1'],['Fy',sgn(Fy)+' kN','--f2'],['Fz',sgn(Fz)+' kN','--f3'],['|r_AB|',fmt(r)+' m']]);
+  $('t3calc').innerHTML=`<span class="s">1. Vector posición</span>A = (0; 0; ${fmt(h,1)}) m &nbsp; B = (${sgn(xB,1)}; ${sgn(yB,1)}; 0) m<br>r_AB = B − A = (${sgn(rx,2)}; ${sgn(ry,2)}; ${sgn(rz,2)}) m<br>|r_AB| = √(${fmt(rx*rx,2)} + ${fmt(ry*ry,2)} + ${fmt(rz*rz,2)}) = <b>${fmt(r,3)} m</b>
+  <span class="s">2. Vector unitario</span>u = (${sgn(ux,4)}; ${sgn(uy,4)}; ${sgn(uz,4)})
+  <span class="s">3. Fuerza</span>F = ${fmt(F,1)} · u = (<b>${sgn(Fx)}</b>; <b>${sgn(Fy)}</b>; <b>${sgn(Fz)}</b>) kN
+  <span class="s">4. Ángulos directores</span>α = ${fmt(al,1)}° &nbsp; β = ${fmt(be,1)}° &nbsp; γ = ${fmt(ga,1)}°<br><span class="c">Comprobación: cos²α + cos²β + cos²γ = ${fmt(ux*ux+uy*uy+uz*uz,4)} ✓</span>
+  <span class="s">5. Efecto sobre el poste</span>Compresión que agrega al poste: |Fz| = <b>${fmt(Math.abs(Fz))} kN</b><br>Empuje horizontal hacia el anclaje: √(Fx² + Fy²) = <b>${fmt(Fh)} kN</b>`;
+}
+bind(['t3h','t3x','t3y','t3F'],draw3d);
+
+/* ===== 05 · nudo ===== */
+function drawNudo(){
+  const W=+$('nW').value,al=+$('nA').value,be=+$('nB').value;
+  $('nWo').textContent=fmt(W,1)+' kN';$('nAo').textContent=al+'°';$('nBo').textContent=be+'°';
+  const a=rad(al),b=rad(be),sab=Math.sin(a+b),T1=W*Math.cos(b)/sab,T2=W*Math.cos(a)/sab;
+  const s=$('nudo');s.innerHTML='';const d=118,ys=40,cx=300;
+  el('rect',{x:90,y:ys-28,width:420,height:28,class:'beam'},s);txt(s,300,ys-10,'losa de concreto','m','middle');
+  const tt=2*d*Math.sin(b)/sab,Rx=cx-d+tt*Math.cos(a),Ry=ys+tt*Math.sin(a);
+  el('line',{x1:cx-d,y1:ys,x2:Rx,y2:Ry,class:'ci stroke','stroke-width':2.5},s);el('line',{x1:cx+d,y1:ys,x2:Rx,y2:Ry,class:'ci stroke','stroke-width':2.5},s);
+  el('line',{x1:Rx,y1:Ry,x2:Rx,y2:Ry+34,class:'ci stroke','stroke-width':2.5},s);
+  el('rect',{x:Rx-70,y:Ry+34,width:140,height:9,class:'box'},s);el('rect',{x:Rx-26,y:Ry+43,width:52,height:26,class:'box'},s);
+  el('circle',{cx:Rx,cy:Ry,r:7,class:'sup'},s);
+  [[cx-d,a,1,'α'],[cx+d,b,-1,'β']].forEach(([x,an,dir,n])=>{const r=36;el('path',{d:`M${x+dir*r} ${ys} A ${r} ${r} 0 0 ${dir>0?1:0} ${x+dir*r*Math.cos(an)} ${ys+r*Math.sin(an)}`,class:'cg stroke','stroke-width':1.5},s);
+    el('line',{x1:x,y1:ys,x2:x+dir*(r+16),y2:ys,class:'cg stroke dash','stroke-width':1},s);txt(s,x+dir*(r+8),ys+20,`${n} = ${n==='α'?al:be}°`,'big',dir>0?'start':'end');});
+  txt(s,(cx-d+Rx)/2-10,(ys+Ry)/2,'T₁','cr fill big','end');txt(s,(cx+d+Rx)/2+10,(ys+Ry)/2,'T₂','cr fill big');
+  txt(s,Rx,Ry+90,`W = ${fmt(W,1)} kN`,'c1 fill big','middle');
+  const f=$('nudoDcl');f.innerHTML='';const c=[180,120],k=80/Math.max(W,T1,T2);
+  el('line',{x1:20,y1:c[1],x2:340,y2:c[1],class:'cg stroke dash','stroke-width':1},f);
+  arrow(f,c[0],c[1],c[0]-T1*k*Math.cos(a),c[1]-T1*k*Math.sin(a),'cr',3,11);arrow(f,c[0],c[1],c[0]+T2*k*Math.cos(b),c[1]-T2*k*Math.sin(b),'cr',3,11);arrow(f,c[0],c[1],c[0],c[1]+W*k,'c1',3,11);
+  txt(f,c[0]-T1*k*Math.cos(a)-4,c[1]-T1*k*Math.sin(a)-6,`T₁ = ${fmt(T1)} kN`,'cr fill','end');txt(f,c[0]+T2*k*Math.cos(b)+4,c[1]-T2*k*Math.sin(b)-6,`T₂ = ${fmt(T2)} kN`,'cr fill');txt(f,c[0]+8,c[1]+W*k,`W`,'c1 fill');
+  el('circle',{cx:c[0],cy:c[1],r:5,class:'ci fill'},f);txt(f,180,224,'DCL del anillo: el entorno se reemplaza por fuerzas','m','middle');
+  kp('nkp',[['T₁',fmt(T1)+' kN','--accent'],['T₂',fmt(T2)+' kN','--accent'],['T₁ / W',fmt(T1/W*100,0)+' %'],['T₂ / W',fmt(T2/W*100,0)+' %']]);
+  const ex=-T1*Math.cos(a)+T2*Math.cos(b),ey=T1*Math.sin(a)+T2*Math.sin(b)-W;
+  $('ncalc').innerHTML=`<span class="s">Ecuaciones</span>ΣFx: −T₁·cos ${al}° + T₂·cos ${be}° = 0<br>ΣFy: T₁·sen ${al}° + T₂·sen ${be}° − ${fmt(W,1)} = 0
+  <span class="s">Solución</span>T₁ = ${fmt(W,1)} · ${fmt(Math.cos(b),4)} / ${fmt(sab,4)} = <b>${fmt(T1)} kN</b><br>T₂ = ${fmt(W,1)} · ${fmt(Math.cos(a),4)} / ${fmt(sab,4)} = <b>${fmt(T2)} kN</b>
+  <span class="s">Comprobación</span><span class="c">ΣFx = ${sgn(ex,4)} kN · ΣFy = ${sgn(ey,4)} kN ✓</span>`;
+}
+bind(['nW','nA','nB'],drawNudo);
+
+/* ===== 06 · momento ===== */
+function drawMom(){
+  const F=+$('mF').value,x=+$('mx').value,th=+$('mt').value;
+  $('mFo').textContent=fmt(F,1)+' kN';$('mxo').textContent=fmt(x,2)+' m';$('mto').textContent=th+'°';
+  const s=$('mom');s.innerHTML='';const O=[70,190],sc=230,Px=O[0]+x*sc,Py=O[1],t=rad(th),u=[Math.cos(t),-Math.sin(t)],len=40+F*12;
+  el('rect',{x:O[0]-10,y:O[1]-7,width:2*sc+30,height:14,class:'beam'},s);el('circle',{cx:O[0],cy:O[1],r:9,class:'sup'},s);el('circle',{cx:O[0],cy:O[1],r:3,class:'ci fill'},s);txt(s,O[0],O[1]+30,'O (pivote)','big','middle');
+  el('line',{x1:Px-u[0]*600,y1:Py-u[1]*600,x2:Px+u[0]*600,y2:Py+u[1]*600,class:'cg stroke dash','stroke-width':1},s);
+  const tail=[Px-u[0]*len,Py-u[1]*len];arrow(s,tail[0],tail[1],Px,Py,'cr',4,14);txt(s,tail[0]+(u[0]>0?-6:6),tail[1]-6,`F = ${fmt(F,1)} kN`,'cr fill big halo',u[0]>0?'end':'start');
+  const wx=O[0]-Px,wy=O[1]-Py,pr=wx*u[0]+wy*u[1],foot=[Px+u[0]*pr,Py+u[1]*pr],dd=x*Math.abs(Math.sin(t));
+  if(dd>0.02){el('line',{x1:O[0],y1:O[1],x2:foot[0],y2:foot[1],class:'c1 stroke','stroke-width':2.5},s);txt(s,(O[0]+foot[0])/2-8,(O[1]+foot[1])/2-8,`d = ${fmt(dd,3)} m`,'c1 fill big halo','end');}
+  el('line',{x1:O[0],y1:O[1]+48,x2:Px,y2:O[1]+48,class:'cg stroke','stroke-width':1},s);txt(s,(O[0]+Px)/2,O[1]+64,`x = ${fmt(x,2)} m`,'m','middle');
+  const M=x*F*Math.sin(t),Fx=F*Math.cos(t),Fy=F*Math.sin(t);
+  kp('mkp',[['M_O',sgn(M,3)+' kN·m','--accent'],['Brazo d',fmt(dd,3)+' m','--f1'],['Sentido',Math.abs(M)<1e-9?'—':M>0?'antihorario':'horario']]);
+  $('mcalc').innerHTML=`<span class="s">Directo</span>d = x · sen θ = ${fmt(x,2)} · ${fmt(Math.sin(t),4)} = ${fmt(dd,3)} m<br>|M_O| = F · d = ${fmt(F,1)} · ${fmt(dd,3)} = <b>${fmt(Math.abs(M),3)} kN·m</b>
+  <span class="s">Varignon (por componentes)</span>Fx = ${sgn(Fx,3)} kN pasa por O → no hace momento<br>Fy = ${sgn(Fy,3)} kN → M_O = x · Fy = ${fmt(x,2)} · ${sgn(Fy,3)} = <b>${sgn(M,3)} kN·m</b><br><span class="c">${Math.abs(M)<1e-9?'La fuerza pasa por O: no hace girar.':M>0?'Positivo: gira en sentido antihorario.':'Negativo: gira en sentido horario.'}</span>`;
+}
+bind(['mF','mx','mt'],drawMom);
+
+function drawDist(){
+  const w1=+$('dw1').value,w2=+$('dw2').value,L=+$('dL').value;
+  $('dw1o').textContent=fmt(w1,1)+' kN/m';$('dw2o').textContent=fmt(w2,1)+' kN/m';$('dLo').textContent=fmt(L,1)+' m';
+  const s=$('dist');s.innerHTML='';const x0=60,x1=560,yb=170,sc=7,X=v=>x0+v/L*(x1-x0);
+  const R=(w1+w2)*L/2,xb=(w1+w2)>0?L*(w1+2*w2)/(3*(w1+w2)):L/2;
+  el('polygon',{points:`${x0},${yb} ${x0},${yb-w1*sc} ${x1},${yb-w2*sc} ${x1},${yb}`,class:'c2 fill',opacity:.2},s);
+  el('line',{x1:x0,y1:yb-w1*sc,x2:x1,y2:yb-w2*sc,class:'c2 stroke','stroke-width':2},s);
+  for(let i=0;i<=10;i++){const xx=x0+(x1-x0)*i/10,hh=(w1+(w2-w1)*i/10)*sc;if(hh>8)arrow(s,xx,yb-hh,xx,yb-1,'c2',1.5,7);}
+  el('rect',{x:x0-8,y:yb,width:x1-x0+16,height:14,class:'beam'},s);
+  txt(s,x0,yb-w1*sc-8,`w₁ = ${fmt(w1,1)}`,'c2 fill','start');txt(s,x1,yb-w2*sc-8,`w₂ = ${fmt(w2,1)}`,'c2 fill','end');
+  if(R>0){arrow(s,X(xb),20,X(xb),yb-2,'cr',4,14);txt(s,X(xb)+(xb/L>0.7?-8:8),34,`R = ${fmt(R)} kN`,'cr fill big halo',xb/L>0.7?'end':'start');}
+  el('line',{x1:x0,y1:yb+34,x2:X(xb),y2:yb+34,class:'cr stroke','stroke-width':1.5},s);txt(s,(x0+X(xb))/2,yb+50,`x̄ = ${fmt(xb,3)} m`,'cr fill','middle');
+  const Rr=Math.min(w1,w2)*L,Rt=Math.abs(w2-w1)*L/2,xr=L/2,xt=w2>=w1?2*L/3:L/3;
+  kp('dkp',[['R',fmt(R)+' kN','--accent'],['x̄ desde la izquierda',fmt(xb,3)+' m']]);
+  $('dcalc').innerHTML=`<span class="s">Descomposición en rectángulo + triángulo</span>Rectángulo: ${fmt(Math.min(w1,w2),1)} · ${fmt(L,1)} = ${fmt(Rr)} kN en x = ${fmt(xr,3)} m<br>Triángulo: ½ · ${fmt(Math.abs(w2-w1),1)} · ${fmt(L,1)} = ${fmt(Rt)} kN en x = ${fmt(xt,3)} m
+  <span class="s">Resultante</span>R = ${fmt(Rr)} + ${fmt(Rt)} = <b>${fmt(R)} kN</b><br>x̄ = (${fmt(Rr)}·${fmt(xr,3)} + ${fmt(Rt)}·${fmt(xt,3)}) / ${fmt(R)} = <b>${fmt(xb,3)} m</b><br><span class="c">Coincide con la fórmula del trapecio: L(w₁ + 2w₂) / [3(w₁ + w₂)]</span>`;
+}
+bind(['dw1','dw2','dL'],drawDist);
+
+/* ===== motor: vigas ===== */
+function beamSolve(d){
+  const L=d.L,loads=d.loads,cant=d.type==='cant',xa=cant?0:(d.xa??0),xb=cant?0:(d.xb??L);
+  let Pt=0,Ma=0;loads.forEach(q=>{if(q.t==='P'){Pt+=q.P;Ma+=q.P*(q.x-xa);}else{const W=q.w*(q.x2-q.x1),xc=(q.x1+q.x2)/2;Pt+=W;Ma+=W*(xc-xa);}});
+  let Ra,Rb=0,MA=0;if(cant){Ra=Pt;MA=Ma;}else{Rb=Ma/(xb-xa);Ra=Pt-Rb;}
+  const R=cant?[{x:0,R:Ra}]:[{x:xa,R:Ra},{x:xb,R:Rb}];
+  const V=x=>{let v=0;R.forEach(r=>{if(r.x<=x)v+=r.R;});loads.forEach(q=>{if(q.t==='P'){if(q.x<=x)v-=q.P;}else if(x>q.x1)v-=q.w*(Math.min(x,q.x2)-q.x1);});return v;};
+  const M=x=>{let m=cant?-MA:0;R.forEach(r=>{if(r.x<=x)m+=r.R*(x-r.x);});loads.forEach(q=>{if(q.t==='P'){if(q.x<=x)m-=q.P*(x-q.x);}else if(x>q.x1){if(x<=q.x2)m-=q.w*(x-q.x1)*(x-q.x1)/2;else m-=q.w*(q.x2-q.x1)*(x-(q.x1+q.x2)/2);}});return m;};
+  const keys=[0,L,xa,xb];loads.forEach(q=>{if(q.t==='P')keys.push(q.x);else keys.push(q.x1,q.x2);});
+  let xs=[];for(let i=0;i<=400;i++)xs.push(L*i/400);keys.forEach(k=>{xs.push(k-1e-7,k,k+1e-7);});xs=xs.filter(x=>x>=0&&x<=L).sort((a,b)=>a-b);
+  const Vs=xs.map(V),Ms=xs.map(M);let mi=0,ni=0,vi=0;Ms.forEach((m,i)=>{if(m>Ms[mi])mi=i;if(m<Ms[ni])ni=i;});Vs.forEach((v,i)=>{if(Math.abs(v)>Math.abs(Vs[vi]))vi=i;});
+  return {Ra,Rb,MA,xa,xb,V,M,xs,Vs,Ms,Pt,Ma,Mmax:Ms[mi],xMmax:xs[mi],Mmin:Ms[ni],xMmin:xs[ni],Vmax:Vs[vi],xVmax:xs[vi],resFy:Ra+Rb-Pt,resM:M(L)};
+}
+
+/* ===== 07 · viga ===== */
+let BM=null;
+function beamDef(){
+  const ty=+segVal('bmType','data-t'),L=+$('bL').value,ov=Math.min(+$('bov').value,L-1),pos=id=>+$(id).value/100*L;
+  const loads=[],P1=+$('bP1').value,P2=+$('bP2').value,w=+$('bw').value,xs=Math.min(pos('bxs'),pos('bxe')),xe=Math.max(pos('bxs'),pos('bxe'));
+  if(P1>0)loads.push({t:'P',x:pos('bx1'),P:P1,n:'P₁'});if(P2>0)loads.push({t:'P',x:pos('bx2'),P:P2,n:'P₂'});if(w>0&&xe-xs>1e-6)loads.push({t:'w',x1:xs,x2:xe,w});
+  return {ty,L,ov,loads,type:ty===2?'cant':'ss',xa:0,xb:ty===1?L-ov:L};
+}
+function drawBeam(){
+  const d=beamDef(),L=d.L,r=beamSolve(d);BM={d,r};
+  $('bLo').textContent=fmt(L,1)+' m';$('bovo').textContent=d.ty===1?fmt(d.ov,2)+' m':'—';$('bov').disabled=d.ty!==1;
+  const p=id=>+$(id).value/100*L;
+  $('bP1o').textContent=$('bP1').value+' kN';$('bP2o').textContent=$('bP2').value+' kN';$('bx1o').textContent=fmt(p('bx1'),2)+' m';$('bx2o').textContent=fmt(p('bx2'),2)+' m';
+  $('bwo').textContent=fmt(+$('bw').value,1)+' kN/m';$('bxso').textContent=fmt(p('bxs'),2)+' m';$('bxeo').textContent=fmt(p('bxe'),2)+' m';
+  $('bmTag').textContent=['simplemente apoyada','con voladizo','empotrada en A'][d.ty];
+  const s=$('bm');s.innerHTML='';const x0=60,x1=590,yb=120,X=v=>x0+v/L*(x1-x0);
+  d.loads.forEach(q=>{if(q.t==='w'){const top=yb-26-q.w*2.2;el('line',{x1:X(q.x1),y1:top,x2:X(q.x2),y2:top,class:'c2 stroke','stroke-width':1.5},s);const n=Math.max(2,Math.round((q.x2-q.x1)/L*16));for(let i=0;i<=n;i++){const xx=X(q.x1)+(X(q.x2)-X(q.x1))*i/n;arrow(s,xx,top,xx,yb-2,'c2',1.5,7);}txt(s,X(q.x2),top-8,`w = ${fmt(q.w,1)} kN/m`,'c2 fill halo','end');}});
+  el('rect',{x:x0,y:yb,width:x1-x0,height:16,class:'beam'},s);
+  d.loads.forEach(q=>{if(q.t==='P'){const xp=X(q.x);arrow(s,xp,14,xp,yb-2,'cr',4,14);txt(s,xp+(q.x/L>0.75?-8:8),28,`${q.n} = ${fmt(q.P,0)} kN`,'cr fill big halo',q.x/L>0.75?'end':'start');}});
+  const mx=Math.max(Math.abs(r.Ra),Math.abs(r.Rb),1);
+  if(d.ty===2){el('rect',{x:x0-16,y:yb-40,width:16,height:96,class:'sup'},s);for(let i=0;i<8;i++)el('line',{x1:x0-16,y1:yb-34+i*12,x2:x0-26,y2:yb-42+i*12,class:'gnd'},s);
+    const len=20+50*Math.abs(r.Ra)/mx;arrow(s,x0+26,yb+70+len,x0+26,yb+20,'c1',3.5,11);txt(s,x0+34,yb+70+len-4,`Ay = ${fmt(r.Ra)} kN`,'c1 fill big halo');
+    el('path',{d:`M${x0+30} ${yb-38} A 34 34 0 0 0 ${x0+30} ${yb+54}`,class:'c1 stroke','stroke-width':2.5},s);txt(s,x0+40,yb-42,`M_A = ${fmt(r.MA)} kN·m`,'c1 fill big halo');}
+  else{pin(s,X(r.xa),yb+16);roller(s,X(r.xb),yb+16);
+    [[r.xa,r.Ra,'R_A',-1],[r.xb,r.Rb,'R_B',1]].forEach(([xx,R,n,sd])=>{const len=18+46*Math.abs(R)/mx,xo=X(xx)+sd*30;if(R>=0)arrow(s,xo,yb+70+len,xo,yb+30,'c1',3.5,11);else arrow(s,xo,yb+30,xo,yb+70+len,'c1',3.5,11);
+      txt(s,xo+(sd<0?-6:6),yb+70+len-2,`${n.replace('_','')} = ${sgn(R)} kN`,'c1 fill big halo',sd<0?'end':'start');});}
+  txt(s,X(0),yb+42,'A','big','middle');if(d.ty!==2)txt(s,X(r.xb),yb+64,'B','big','middle');
+  el('line',{x1:x0,y1:252,x2:x1,y2:252,class:'cg stroke','stroke-width':1},s);txt(s,(x0+x1)/2,248,`L = ${fmt(L,1)} m`,'m','middle');
+  if(d.ty===2)kp('bkp',[['Ay',fmt(r.Ra)+' kN','--f1'],['M_A',fmt(r.MA)+' kN·m','--f1'],['Ax','0 kN']]);
+  else kp('bkp',[['R_A',sgn(r.Ra)+' kN','--f1'],['R_B',sgn(r.Rb)+' kN','--f1'],['Ax','0 kN'],['Isostática','r = 3 ✓']]);
+  let h='<span class="s">1. Cargas y resultantes</span>';
+  if(!d.loads.length)h+='<span class="c">Sin cargas: todas las reacciones valen cero.</span><br>';
+  d.loads.forEach(q=>{h+=q.t==='P'?`${q.n} = ${fmt(q.P,1)} kN en x = ${fmt(q.x,3)} m<br>`:`W = w · (x₂ − x₁) = ${fmt(q.w,1)} · ${fmt(q.x2-q.x1,3)} = ${fmt(q.w*(q.x2-q.x1),3)} kN en x = ${fmt((q.x1+q.x2)/2,3)} m (centro del tramo)<br>`;});
+  const terms=d.loads.map(q=>q.t==='P'?`${fmt(q.P,1)}·${fmt(q.x,3)}`:`${fmt(q.w*(q.x2-q.x1),3)}·${fmt((q.x1+q.x2)/2,3)}`).join(' + ')||'0';
+  if(d.ty===2){h+=`<span class="s">2. ΣFy = 0</span>Ay − ΣP = 0 → Ay = <b>${fmt(r.Ra,3)} kN</b><span class="s">3. ΣM_A = 0 (antihorario +)</span>M_A − (${terms}) = 0 → M_A = <b>${fmt(r.MA,3)} kN·m</b><br><span class="c">El empotramiento resiste el giro horario de las cargas con un momento antihorario.</span><span class="s">4. ΣFx = 0</span>Ax = 0 (sin cargas horizontales)`;}
+  else{h+=`<span class="s">2. ΣM_A = 0 (antihorario +)</span>R_B · ${fmt(r.xb,3)} − (${terms}) = 0 → R_B = ${fmt(r.Ma,3)} / ${fmt(r.xb,3)} = <b>${sgn(r.Rb,3)} kN</b><span class="s">3. ΣFy = 0 (arriba +)</span>R_A + R_B − ${fmt(r.Pt,3)} = 0 → R_A = <b>${sgn(r.Ra,3)} kN</b><span class="s">4. ΣFx = 0</span>Ax = 0 (sin cargas horizontales)`;
+    const MB=r.Ra*(r.xb-0)-d.loads.reduce((a,q)=>a+(q.t==='P'?q.P*(r.xb-q.x):q.w*(q.x2-q.x1)*(r.xb-(q.x1+q.x2)/2)),0);
+    h+=`<span class="s">5. Comprobación</span><span class="c">ΣM_B = ${sgn(MB,6)} kN·m ✓ · R_A + R_B = ${fmt(r.Ra+r.Rb,3)} kN = ΣP ✓</span>`;
+    if(r.Ra<-1e-9)h+=`<br><span class="c">R_A negativa: el apoyo A tiene que jalar la viga hacia abajo (el voladizo la levanta). En obra se ancla.</span>`;}
+  $('bcalc').innerHTML=h;
+  drawVM();
+}
+bind(['bL','bov','bP1','bx1','bP2','bx2','bw','bxs','bxe'],drawBeam);
+segBind('bmType','data-t',drawBeam);
+
+/* ===== 09 · diagramas ===== */
+function plotPanel(s,xs,ys,y0,h,x0,w,L,cls,fillCls,unit,label,cut,cutV,marks){
+  let mn=Math.min(0,...ys),mx=Math.max(0,...ys);if(mx-mn<1e-9){mn=-1;mx=1;}const pad=(mx-mn)*0.15;mn-=pad;mx+=pad;
+  const X=x=>x0+x/L*w,Y=v=>y0+h-(v-mn)/(mx-mn)*h;
+  nice(mn,mx,4).forEach(t=>{el('line',{x1:x0,y1:Y(t),x2:x0+w,y2:Y(t),class:t===0?'axis':'gridl'},s);txt(s,x0-6,Y(t)+4,sgn(t,Math.abs(t)<10&&t!==Math.round(t)?1:0),'m','end');});
+  nice(0,L,6).forEach(t=>{el('line',{x1:X(t),y1:y0,x2:X(t),y2:y0+h,class:'gridl'},s);});
+  const pts=xs.map((x,i)=>`${X(x).toFixed(1)},${Y(ys[i]).toFixed(1)}`);
+  el('polygon',{points:`${X(xs[0])},${Y(0)} ${pts.join(' ')} ${X(xs[xs.length-1])},${Y(0)}`,class:fillCls+' fill',opacity:.18},s);
+  el('polyline',{points:pts.join(' '),class:cls+' stroke','stroke-width':2.4},s);
+  txt(s,x0,y0-8,label,'big');txt(s,x0+w,y0-8,unit,'m','end');
+  (marks||[]).forEach(m=>{el('circle',{cx:X(m.x),cy:Y(m.y),r:4,class:cls+' fill'},s);txt(s,X(m.x)+(m.x>L*0.75?-8:8),Y(m.y)+(m.y>=0?-8:16),m.t,cls+' fill halo',m.x>L*0.75?'end':'start');});
+  el('line',{x1:X(cut),y1:y0,x2:X(cut),y2:y0+h,class:'cr stroke dash','stroke-width':1.5},s);el('circle',{cx:X(cut),cy:Y(cutV),r:5,class:'cr fill'},s);
+}
+function drawVM(){
+  if(!BM)return;const {d,r}=BM,L=d.L,x=+$('cx').value/1000*L;$('cxo').textContent=fmt(x,3)+' m';
+  const s=$('vm');s.innerHTML='';const x0=60,w=560;
+  plotPanel(s,r.xs,r.Vs,30,160,x0,w,L,'c3','c3','kN','Fuerza cortante V(x)',x,r.V(x),[{x:r.xVmax,y:r.Vmax,t:`|V|máx = ${fmt(Math.abs(r.Vmax))}`}]);
+  const mk=[{x:r.xMmax,y:r.Mmax,t:`Mmáx = ${fmt(r.Mmax)}`}];if(r.Mmin<-1e-6)mk.push({x:r.xMmin,y:r.Mmin,t:`Mmín = ${sgn(r.Mmin)}`});
+  plotPanel(s,r.xs,r.Ms,236,160,x0,w,L,'c2','c2','kN·m','Momento flector M(x)',x,r.M(x),mk);
+  nice(0,L,6).forEach(t=>txt(s,x0+t/L*w,412,fmt(t,t===Math.round(t)?0:1),'m','middle'));
+  kp('vmkp',[['V en el corte',sgn(r.V(x))+' kN','--f3'],['M en el corte',sgn(r.M(x))+' kN·m','--f2'],['Mmáx',sgn(r.Mmax)+' kN·m'],['en x',fmt(r.xMmax,2)+' m'],['|V|máx',fmt(Math.abs(r.Vmax))+' kN']]);
+}
+$('cx').addEventListener('input',drawVM);
+
+/* ===== motor: armaduras ===== */
+function gauss(A,b){const n=A.length,M=A.map((r,i)=>r.concat([b[i]]));
+  for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;if(Math.abs(M[p][c])<1e-10)return null;const t=M[c];M[c]=M[p];M[p]=t;
+    for(let r=c+1;r<n;r++){const f=M[r][c]/M[c][c];if(f!==0)for(let k=c;k<=n;k++)M[r][k]-=f*M[c][k];}}
+  const x=new Array(n).fill(0);for(let r=n-1;r>=0;r--){let s=M[r][n];for(let k=r+1;k<n;k++)s-=M[r][k]*x[k];x[r]=s/M[r][r];}return x;}
+function trussGeom(type,L,n,h){const nodes=[],bars=[];
+  for(let i=0;i<=n;i++)nodes.push([i*L/n,0]);
+  if(type==='warren'){for(let i=0;i<n;i++)nodes.push([(i+.5)*L/n,h]);for(let i=0;i<n;i++)bars.push([i,i+1]);for(let i=0;i<n-1;i++)bars.push([n+1+i,n+2+i]);for(let i=0;i<n;i++){bars.push([i,n+1+i]);bars.push([n+1+i,i+1]);}}
+  else{for(let i=0;i<=n;i++)nodes.push([i*L/n,h]);for(let i=0;i<n;i++)bars.push([i,i+1]);for(let i=0;i<n;i++)bars.push([n+1+i,n+2+i]);for(let i=0;i<=n;i++)bars.push([i,n+1+i]);
+    for(let i=0;i<n;i++){const left=i<n/2;if(type==='pratt')bars.push(left?[n+1+i,i+1]:[n+2+i,i]);else bars.push(left?[i,n+2+i]:[i+1,n+1+i]);}}
+  return {nodes,bars,pin:0,roll:n,n,L,h,type};}
+function solveTruss(g,loads){const nb=g.bars.length,nn=g.nodes.length,nu=nb+3;if(2*nn!==nu)return {err:'b + r ≠ 2j'};
+  const A=[];for(let i=0;i<2*nn;i++)A.push(new Array(nu).fill(0));const rhs=new Array(2*nn).fill(0);
+  g.bars.forEach((bq,k)=>{const a=g.nodes[bq[0]],b=g.nodes[bq[1]],l=Math.hypot(b[0]-a[0],b[1]-a[1]),ux=(b[0]-a[0])/l,uy=(b[1]-a[1])/l;A[2*bq[0]][k]+=ux;A[2*bq[0]+1][k]+=uy;A[2*bq[1]][k]-=ux;A[2*bq[1]+1][k]-=uy;});
+  A[2*g.pin][nb]=1;A[2*g.pin+1][nb+1]=1;A[2*g.roll+1][nb+2]=1;for(let i=0;i<nn;i++){rhs[2*i]=-loads[i][0];rhs[2*i+1]=-loads[i][1];}
+  const x=gauss(A,rhs);if(!x)return {err:'estructura inestable'};const F=x.slice(0,nb),Ax=x[nb],Ay=x[nb+1],By=x[nb+2];
+  let sx=Ax,sy=Ay+By,sm=By*g.nodes[g.roll][0];loads.forEach((l,i)=>{sx+=l[0];sy+=l[1];sm+=g.nodes[i][0]*l[1]-g.nodes[i][1]*l[0];});
+  return {F,Ax,Ay,By,resX:sx,resY:sy,resM:sm,len:g.bars.map(bq=>Math.hypot(g.nodes[bq[1]][0]-g.nodes[bq[0]][0],g.nodes[bq[1]][1]-g.nodes[bq[0]][1]))};}
+function deckLoads(g,w,P,k){const L=g.nodes.map(()=>[0,0]);for(let i=0;i<=g.n;i++){const trib=(i===0||i===g.n)?g.L/(2*g.n):g.L/g.n;L[i][1]-=w*trib;}if(P>0)L[k][1]-=P;return L;}
+const NL='ABCDEFGHIJKLMNOPQRSTUVWXYZ',nlab=i=>NL[i]||('N'+i);
+
+/* ===== 08 · armadura ===== */
+function drawTruss(){
+  const type=segVal('trType','data-t'),n=+segVal('trN','data-n'),L=+$('trL').value,h=+$('trH').value,w=+$('trW').value,P=+$('trP').value;
+  $('trK').max=n-1;const k=Math.min(+$('trK').value,n-1);
+  $('trLo').textContent=L+' m';$('trHo').textContent=fmt(h,2)+' m';$('trWo').textContent=fmt(w,1)+' kN/m';$('trPo').textContent=P+' kN';$('trKo').textContent=nlab(k);
+  const g=trussGeom(type,L,n,h),loads=deckLoads(g,w,P,k),s0=solveTruss(g,loads),svg=$('tr');svg.innerHTML='';
+  $('trTag').textContent=`${type[0].toUpperCase()+type.slice(1)} · ${g.bars.length} barras · ${g.nodes.length} nudos`;
+  if(s0.err){txt(svg,320,150,'No resoluble: '+s0.err,'cr fill big','middle');return;}
+  const sc=Math.min(540/L,170/h),x0=50+(540-L*sc)/2,yb=225,Pp=i=>[x0+g.nodes[i][0]*sc,yb-g.nodes[i][1]*sc],Fm=Math.max(1e-9,...s0.F.map(Math.abs));
+  g.bars.forEach((bq,i)=>{const a=Pp(bq[0]),e=Pp(bq[1]),f=s0.F[i],z=Math.abs(f)<1e-6;el('line',{x1:a[0],y1:a[1],x2:e[0],y2:e[1],class:(z?'cg':f>0?'ct':'cc')+' stroke'+(z?' dash':''),'stroke-width':z?1.5:2+6*Math.abs(f)/Fm},svg);});
+  g.bars.forEach((bq,i)=>{const a=Pp(bq[0]),e=Pp(bq[1]),f=s0.F[i],z=Math.abs(f)<1e-6;txt(svg,(a[0]+e[0])/2,(a[1]+e[1])/2+(Math.abs(e[1]-a[1])<1?-7:4),z?'0':sgn(f,1),(z?'cg':f>0?'ct':'cc')+' fill halo','middle');});
+  g.nodes.forEach((nd,i)=>{const p=Pp(i);el('circle',{cx:p[0],cy:p[1],r:4.5,class:'sup'},svg);txt(svg,p[0]+(nd[1]>0?0:-9),p[1]+(nd[1]>0?-10:16),nlab(i),'m halo',nd[1]>0?'middle':'end');});
+  pin(svg,Pp(g.pin)[0],Pp(g.pin)[1]+5);roller(svg,Pp(g.roll)[0],Pp(g.roll)[1]+5);
+  const lv=Math.max(1e-9,...loads.map(l=>-l[1]));loads.forEach((l,i)=>{if(l[1]<0){const p=Pp(i),len=12+20*(-l[1])/lv;arrow(svg,p[0],p[1]-len-6,p[0],p[1]-6,'cr',2,8);}});
+  const F=s0.F,bn=i=>nlab(g.bars[i][0])+nlab(g.bars[i][1]);let imax=0,imin=0;F.forEach((f,i)=>{if(f>F[imax])imax=i;if(f<F[imin])imin=i;});
+  // comprobación por secciones: momento de la viga equivalente en cada nudo inferior
+  const Mj=[];for(let j=0;j<=n;j++){const xj=g.nodes[j][0];let m=s0.Ay*xj;for(let i=0;i<=n;i++){if(g.nodes[i][0]<xj)m+=loads[i][1]*(xj-g.nodes[i][0]);}Mj.push(m);}
+  const Mmax=Math.max(...Mj),chordIdx=g.bars.map((bq,i)=>i).filter(i=>{const [a,b]=g.bars[i];return g.nodes[a][1]===g.nodes[b][1];}),chordMax=Math.max(...chordIdx.map(i=>Math.abs(F[i]))),est=Mmax/h;
+  kp('trkp',[['Tensión máx.',`${bn(imax)} ${sgn(F[imax],1)}`,'--tens'],['Compresión máx.',`${bn(imin)} ${sgn(F[imin],1)}`,'--comp'],['R_A',fmt(s0.Ay,1)+' kN','--f1'],['R_B',fmt(s0.By,1)+' kN','--f1']]);
+  $('trcalc').innerHTML=`<span class="s">Isostaticidad</span>b + r = ${g.bars.length} + 3 = ${g.bars.length+3} &nbsp; 2j = 2 · ${g.nodes.length} = ${2*g.nodes.length} ✓
+  <span class="s">Cargas en los nudos</span>w · L/n = ${fmt(w,1)} · ${fmt(L/n,2)} = ${fmt(w*L/n,2)} kN en cada nudo interior${P>0?` + ${P} kN en ${nlab(k)}`:''}
+  <span class="s">Equilibrio global</span><span class="c">ΣFx = ${s0.resX.toExponential(1)} · ΣFy = ${s0.resY.toExponential(1)} · ΣM = ${s0.resM.toExponential(1)} (deben ser ≈ 0)</span>
+  <span class="s">Comprobación por secciones</span>M máx. de la viga equivalente = ${fmt(Mmax,2)} kN·m<br>M / h = ${fmt(Mmax,2)} / ${fmt(h,2)} = <b>${fmt(est,2)} kN</b> &nbsp; cordón más cargado (nudos) = <b>${fmt(chordMax,2)} kN</b><br><span class="c">Diferencia: ${fmt(Math.abs(est-chordMax)/Math.max(chordMax,1e-9)*100,3)} %. Los dos métodos coinciden.</span>`;
+  $('trTab').innerHTML='<table class="t"><tr><th>Barra</th><th>Largo (m)</th><th>Fuerza (kN)</th><th>Estado</th></tr>'+F.map((f,i)=>`<tr><td>${bn(i)}</td><td>${fmt(s0.len[i],2)}</td><td>${sgn(f,2)}</td><td class="${Math.abs(f)<1e-6?'':f>0?'tn':'cp'}" style="text-align:right">${Math.abs(f)<1e-6?'fuerza cero':f>0?'tensión':'compresión'}</td></tr>`).join('')+'</table>';
+}
+bind(['trL','trH','trW','trP','trK'],drawTruss);segBind('trType','data-t',drawTruss);segBind('trN','data-n',drawTruss);
+
+/* ===== 10 · fricción ===== */
+const MU=[['Concreto sobre concreto',0.6],['Concreto sobre suelo',0.45],['Madera sobre concreto',0.5],['Acero sobre acero',0.3]];
+MU.forEach(([n,v])=>{const b=document.createElement('button');b.type='button';b.textContent=`${n} ≈ ${fmt(v,2)}`;b.onclick=()=>{$('fmu').value=v;drawFr();};$('fmuEx').appendChild(b);});
+function drawFr(){
+  const W=+$('fW').value,mu=+$('fmu').value,th=+$('ft').value,P=+$('fP').value;
+  $('fWo').textContent=fmt(W,1)+' kN';$('fmuo').textContent=fmt(mu,2);$('fto').textContent=th+'°';$('fPo').textContent=fmt(P,2)+' kN';
+  const t=rad(th),Preq=mu*W/(Math.cos(t)+mu*Math.sin(t)),topt=deg(Math.atan(mu)),Pmin=mu*W/Math.sqrt(1+mu*mu);
+  const N=W-P*Math.sin(t),Fmax=mu*Math.max(N,0),Fh=P*Math.cos(t),moves=N<=0||Fh>Fmax+1e-9,Fr=moves?Fmax:Fh;
+  const s=$('fr');s.innerHTML='';ground(s,10,590,170);const bx=170,bw=150,bh=70;el('rect',{x:bx,y:170-bh,width:bw,height:bh,class:'box'},s);txt(s,bx+bw/2,140,'bloque','m','middle');
+  const H=[bx+bw,135],k=8;arrow(s,H[0],H[1],H[0]+P*k*Math.cos(t),H[1]-P*k*Math.sin(t),'cr',4,13);txt(s,H[0]+P*k*Math.cos(t)+6,H[1]-P*k*Math.sin(t),`P = ${fmt(P,2)} kN`,'cr fill big halo');
+  if(th>0){const r=44;el('path',{d:`M${H[0]+r} ${H[1]} A ${r} ${r} 0 0 0 ${H[0]+r*Math.cos(t)} ${H[1]-r*Math.sin(t)}`,class:'cg stroke','stroke-width':1.5},s);el('line',{x1:H[0],y1:H[1],x2:H[0]+r+20,y2:H[1],class:'cg stroke dash','stroke-width':1},s);txt(s,H[0]+r+6,H[1]-6,'θ','big');}
+  arrow(s,bx+bw/2,170-bh/2,bx+bw/2,170-bh/2+Math.min(60,W*3),'c1',3,11);txt(s,bx+bw/2+8,170-bh/2+Math.min(60,W*3),`W`,'c1 fill big');
+  if(N>0){arrow(s,bx+30,214,bx+30,172,'ce',3,11);txt(s,bx+38,206,`N = ${fmt(N,2)}`,'ce fill');}
+  if(Fr>1e-6){arrow(s,bx+4,172,bx+4-Math.min(140,Fr*k),172,'c3',3,11);txt(s,bx-Math.min(140,Fr*k),196,`F = ${fmt(Fr,2)}`,'c3 fill','start');}
+  $('frStatus').innerHTML=N<=0?`<span class="pill bad">Se levanta</span> La componente vertical de P supera el peso.`:moves?`<span class="pill bad">Se desliza</span> P·cos θ = ${fmt(Fh,2)} kN supera F_máx = ${fmt(Fmax,2)} kN.`:`<span class="pill ok">No se mueve</span> La fricción necesaria (${fmt(Fh,2)} kN) es menor que F_máx = ${fmt(Fmax,2)} kN.`;
+  kp('frkp',[['P para iniciar',fmt(Preq,2)+' kN','--accent'],['θ óptimo',fmt(topt,1)+'°'],['P mínima',fmt(Pmin,2)+' kN'],['Ahorro vs. θ = 0',fmt((1-Pmin/(mu*W))*100,1)+' %']]);
+  $('frcalc').innerHTML=`<span class="s">Movimiento inminente con θ = ${th}°</span>ΣFy: N = W − P·sen θ<br>ΣFx: P·cos θ = μs·N = μs (W − P·sen θ)<br>P = ${fmt(mu,2)} · ${fmt(W,1)} / (${fmt(Math.cos(t),4)} + ${fmt(mu,2)} · ${fmt(Math.sin(t),4)}) = <b>${fmt(Preq,3)} kN</b>
+  <span class="s">Ángulo óptimo</span>dP/dθ = 0 → tan θ = μs → θ = atan(${fmt(mu,2)}) = <b>${fmt(topt,1)}°</b><br>P_mín = μs·W / √(1 + μs²) = <b>${fmt(Pmin,3)} kN</b>`;
+  const c=$('frc');c.innerHTML='';const x0=56,w=520,y0=16,h=190,ths=[],Ps=[];for(let a=0;a<=60;a+=0.5){ths.push(a);Ps.push(mu*W/(Math.cos(rad(a))+mu*Math.sin(rad(a))));}
+  const mx=Math.max(...Ps)*1.08,mn=Math.min(...Ps)*0.9,X=a=>x0+a/60*w,Y=v=>y0+h-(v-mn)/(mx-mn)*h;
+  nice(mn,mx,4).forEach(v=>{el('line',{x1:x0,y1:Y(v),x2:x0+w,y2:Y(v),class:'gridl'},c);txt(c,x0-6,Y(v)+4,fmt(v,v<10?1:0),'m','end');});
+  [0,10,20,30,40,50,60].forEach(a=>{el('line',{x1:X(a),y1:y0,x2:X(a),y2:y0+h,class:'gridl'},c);txt(c,X(a),y0+h+16,a+'°','m','middle');});
+  el('polyline',{points:ths.map((a,i)=>`${X(a).toFixed(1)},${Y(Ps[i]).toFixed(1)}`).join(' '),class:'cr stroke','stroke-width':2.4},c);
+  el('line',{x1:X(topt),y1:y0,x2:X(topt),y2:y0+h,class:'ce stroke dash','stroke-width':1.5},c);txt(c,X(topt)+6,y0+14,`óptimo ${fmt(topt,1)}°`,'ce fill halo');
+  el('circle',{cx:X(th),cy:Y(Preq),r:5,class:'cr fill'},c);txt(c,x0,y0-4,'P para iniciar el movimiento (kN) según θ','m');txt(c,x0+w,y0+h+32,'ángulo del cable θ','m','end');
+}
+bind(['fW','fmu','ft','fP'],drawFr);
+
+/* ===== 11 · sección ===== */
+function secParts(t,bf,tf,bw,h){
+  if(t==='R')return [{n:'Rectángulo',b:bw,hh:h,y:h/2,x:0}];
+  if(t==='T')return [{n:'Ala',b:bf,hh:tf,y:h-tf/2,x:0},{n:'Alma',b:bw,hh:h-tf,y:(h-tf)/2,x:0}];
+  return [{n:'Ala superior',b:bf,hh:tf,y:h-tf/2,x:0},{n:'Alma',b:bw,hh:h-2*tf,y:h/2,x:0},{n:'Ala inferior',b:bf,hh:tf,y:tf/2,x:0}];
+}
+function drawSec(){
+  const t=segVal('secType','data-s');let bf=+$('sbf').value,tf=+$('stf').value,bw=+$('sbw').value,h=+$('sh').value;
+  bw=Math.min(bw,bf);tf=Math.min(tf,t==='I'?h/2-1:h-1);
+  ['sbf','stf'].forEach(i=>$(i).disabled=t==='R');
+  $('sbfo').textContent=bf+' cm';$('stfo').textContent=fmt(tf,0)+' cm';$('sbwo').textContent=bw+' cm';$('sho').textContent=h+' cm';$('secTag').textContent={T:'viga T',I:'perfil I',R:'rectangular'}[t];
+  const P=secParts(t,bf,tf,bw,h);let A=0,Ay=0;P.forEach(p=>{p.A=p.b*p.hh;A+=p.A;Ay+=p.A*p.y;});const yb=Ay/A;let I=0;P.forEach(p=>{p.I0=p.b*Math.pow(p.hh,3)/12;p.d=p.y-yb;p.Ad2=p.A*p.d*p.d;I+=p.I0+p.Ad2;});
+  const s=$('sec');s.innerHTML='';const W=Math.max(bf,bw),sc=Math.min(300/W,300/h),cx=200,base=340,Y=v=>base-v*sc;
+  P.forEach((p,i)=>{el('rect',{x:cx-p.b*sc/2,y:Y(p.y+p.hh/2),width:p.b*sc,height:p.hh*sc,class:'beam'},s);el('rect',{x:cx-p.b*sc/2,y:Y(p.y+p.hh/2),width:p.b*sc,height:p.hh*sc,class:i%2?'area2':'area1'},s);
+    el('circle',{cx:cx,cy:Y(p.y),r:3,class:'ci fill'},s);txt(s,cx+p.b*sc/2+6,Y(p.y)+4,p.n,'m');});
+  el('line',{x1:cx-W*sc/2-30,y1:Y(yb),x2:cx+W*sc/2+30,y2:Y(yb),class:'cr stroke dash','stroke-width':2},s);txt(s,cx-W*sc/2-30,Y(yb)-6,`eje centroidal ȳ = ${fmt(yb,2)} cm`,'cr fill halo');
+  el('circle',{cx:cx,cy:Y(yb),r:6,class:'cr fill'},s);
+  el('line',{x1:cx+W*sc/2+40,y1:Y(0),x2:cx+W*sc/2+40,y2:Y(yb),class:'cr stroke','stroke-width':1.5},s);
+  el('line',{x1:20,y1:base,x2:400,y2:base,class:'cg stroke','stroke-width':1},s);txt(s,20,base+16,'y = 0 (base)','m');
+  kp('skp',[['Área',fmt(A,1)+' cm²'],['ȳ desde la base',fmt(yb,2)+' cm','--accent'],['I centroidal',fmt(I,0)+' cm⁴','--accent'],['Módulo S (abajo)',fmt(I/yb,0)+' cm³']]);
+  $('sTab').innerHTML='<tr><th>Parte</th><th>A (cm²)</th><th>y (cm)</th><th>A·y (cm³)</th><th>Ī (cm⁴)</th><th>d (cm)</th><th>A·d² (cm⁴)</th></tr>'+P.map(p=>`<tr><td>${p.n}</td><td>${fmt(p.A,1)}</td><td>${fmt(p.y,2)}</td><td>${fmt(p.A*p.y,1)}</td><td>${fmt(p.I0,0)}</td><td>${sgn(p.d,2)}</td><td>${fmt(p.Ad2,0)}</td></tr>`).join('')+`<tr class="sum"><td>Σ</td><td>${fmt(A,1)}</td><td></td><td>${fmt(Ay,1)}</td><td colspan="3">I = ${fmt(I,0)}</td></tr>`;
+  $('scalc').innerHTML=`ȳ = ΣA·y / ΣA = ${fmt(Ay,1)} / ${fmt(A,1)} = <b>${fmt(yb,2)} cm</b><br>I = Σ(Ī + A·d²) = <b>${fmt(I,0)} cm⁴</b> = ${fmt(I/1e8,6)} m⁴<br><span class="c">El término A·d² aporta el ${fmt(P.reduce((a,p)=>a+p.Ad2,0)/I*100,0)} % de la inercia.</span>`;
+}
+bind(['sbf','stf','sbw','sh'],drawSec);segBind('secType','data-s',drawSec);
+
+/* ===== 12 · izaje ===== */
+function drawLift(){
+  const L=+$('lL').value,b=+$('lb').value,h=+$('lh').value,th=+$('lt').value,wll=+$('lwll').value;
+  $('lLo').textContent=fmt(L,1)+' m';$('lbo').textContent=b+' cm';$('lho').textContent=h+' cm';$('lto').textContent=th+'°';$('lwllo').textContent=wll+' kN';
+  const gamma=24,V=L*b/100*h/100,W=gamma*V,sn=Math.sin(rad(th)),cs=Math.cos(rad(th)),T=W/(2*sn),H=T*cs,tW=W/9.80665,util=T/wll;
+  let st;if(th>=60)st=['ok','Ángulo recomendado'];else if(th>=45)st=['warn','Aceptable, con cuidado'];else if(th>=30)st=['warn','Precaución: tensión alta'];else st=['bad','Evitar: tensión excesiva'];
+  const cap=util<=1?['ok',`Eslinga suficiente: usa el ${fmt(util*100,0)} % de su capacidad`]:['bad',`Eslinga insuficiente: necesita ${fmt(util*100,0)} % de su capacidad`];
+  $('liftStatus').innerHTML=`<div><span class="pill ${st[0]}">${st[1]}</span> <span style="font-size:14px;color:var(--muted)">cada eslinga carga ${fmt(1/(2*sn),2)} veces el peso</span></div><div><span class="pill ${cap[0]}">${cap[1]}</span></div>`;
+  kp('lkp',[['Peso W',fmt(W,1)+' kN'],['Masa',fmt(tW,2)+' t'],['Tensión T',fmt(T,1)+' kN','--accent'],['Compresión H',fmt(H,1)+' kN']]);
+  const s=$('lift');s.innerHTML='';const hx=320,hy=44,S=220,d=Math.max(8,S*cs),yb=hy+S*sn;
+  el('line',{x1:hx,y1:0,x2:hx,y2:hy-10,class:'ci stroke','stroke-width':2.5},s);el('path',{d:`M${hx} ${hy-10} q 10 4 8 12 q -2 8 -8 6`,class:'ci stroke','stroke-width':2.5},s);txt(s,hx+14,16,'cable de la grúa','m');
+  el('line',{x1:hx,y1:hy,x2:hx-d,y2:yb,class:(util>1?'ct':'cr')+' stroke','stroke-width':3},s);el('line',{x1:hx,y1:hy,x2:hx+d,y2:yb,class:(util>1?'ct':'cr')+' stroke','stroke-width':3},s);
+  const bw2=Math.min(600,Math.max(2*d+60,120+L*44));el('rect',{x:hx-bw2/2,y:yb,width:bw2,height:12+h*0.28,class:'beam'},s);txt(s,hx,yb+12+h*0.28+18,`viga ${fmt(L,1)} m · ${b}×${h} cm`,'m','middle');
+  if(th<88){const r=46,p0=[hx+d-r,yb],p1=[hx+d-r*cs,yb-r*sn];el('path',{d:`M${p0[0]} ${p0[1]} A ${r} ${r} 0 0 1 ${p1[0]} ${p1[1]}`,class:'cg stroke','stroke-width':1.5},s);txt(s,hx+d-r-8,yb-10,'θ','big','end');}
+  txt(s,hx-d/2-10,hy+(yb-hy)/2,'T','cr fill big','end');txt(s,hx+d/2+10,hy+(yb-hy)/2,'T','cr fill big');
+  const f=$('fbd');f.innerHTML='';const cx=180,cy=95,k=70/W;arrow(f,cx,cy,cx,cy-60,'c1',3,11);txt(f,cx+8,cy-50,`W = ${fmt(W,1)} kN (cable)`,'c1 fill');
+  const tl=T*k,tx=tl*cs,ty=tl*sn;[-1,1].forEach(sg=>{arrow(f,cx,cy,cx+sg*tx,cy+ty,'cr',3,11);el('line',{x1:cx,y1:cy+ty,x2:cx+sg*tx,y2:cy+ty,class:'cg stroke dash','stroke-width':1},f);el('line',{x1:cx+sg*tx,y1:cy,x2:cx+sg*tx,y2:cy+ty,class:'cg stroke dash','stroke-width':1},f);});
+  txt(f,Math.min(cx+tx+8,350),cy+ty+(ty<20?16:4),`T = ${fmt(T,1)} kN`,'cr fill halo',cx+tx+100>355?'end':'start');el('circle',{cx,cy,r:5,class:'ci fill'},f);txt(f,180,236,'punteadas: T·cos θ y T·sen θ','m','middle');
+  $('liftCalc').innerHTML=`<span class="s">1. Peso propio (unidad 02)</span>V = ${fmt(L,1)} × ${fmt(b/100,2)} × ${fmt(h/100,2)} = ${fmt(V,3)} m³<br>W = γ·V = 24 × ${fmt(V,3)} = <b>${fmt(W,2)} kN</b> (≈ ${fmt(tW,2)} t)
+  <span class="s">2. Componentes de cada eslinga (unidad 03)</span>Tx = T·cos ${th}° &nbsp; Ty = T·sen ${th}°
+  <span class="s">3. Equilibrio del gancho (unidad 05)</span>ΣFx: T·cos θ − T·cos θ = 0 ✓<br>ΣFy: 2·T·sen ${th}° − ${fmt(W,2)} = 0 → T = ${fmt(W,2)} / (2 × ${fmt(sn,4)}) = <b>${fmt(T,2)} kN</b>
+  <span class="s">4. Revisión de capacidad</span>T / WLL = ${fmt(T,2)} / ${wll} = <b>${fmt(util,2)}</b> → ${util<=1?'cumple':'no cumple'}<br><span class="c">Compresión axial en la viga: H = T·cos θ = ${fmt(H,2)} kN</span>`;
+}
+bind(['lL','lb','lh','lt','lwll'],drawLift);
+
+/* ===== banco de ejercicios ===== */
+const Q={
+  'Conversión de unidades':()=>{const v=pick([2500,3000,3500,4000,5000]);return {q:`Un concreto se especifica con f'c = ${v} psi. ¿Cuánto es en MPa?`,a:v*0.006894757,u:'MPa',s:`${v} × 0,006895 = ${fmt(v*0.006894757,2)} MPa`};},
+  'Resultante de dos fuerzas':()=>{const F1=pick([30,40,50,60]),F2=pick([20,35,45]),t=pick([60,90,120]);const rx=F1+F2*Math.cos(rad(t)),ry=F2*Math.sin(rad(t)),R=Math.hypot(rx,ry);return {q:`F₁ = ${F1} N a 0° y F₂ = ${F2} N a ${t}°. ¿Cuál es la magnitud de la resultante?`,a:R,u:'N',s:`Rx = ${fmt(rx)} N, Ry = ${fmt(ry)} N → R = ${fmt(R)} N`};},
+  'Fuerza en 3D':()=>{const h=pick([8,10,12]),x=pick([3,4,6]),y=pick([2,4,5]),F=pick([5,8,10]);const r=Math.hypot(x,y,h),Fz=F*h/r;return {q:`Un viento va del punto A = (0; 0; ${h}) m de un poste al anclaje B = (${x}; ${y}; 0) m con F = ${F} kN. ¿Cuánto vale |Fz|?`,a:Fz,u:'kN',s:`|r| = √(${x}² + ${y}² + ${h}²) = ${fmt(r,3)} m → |Fz| = ${F} · ${h} / ${fmt(r,3)} = ${fmt(Fz)} kN`};},
+  'Equilibrio de un nudo':()=>{const W=pick([6,8,10,12]),a=pick([30,40,45,50,60]);const T=W/(2*Math.sin(rad(a)));return {q:`Un andamio de ${W} kN cuelga de dos cables simétricos a ${a}° de la horizontal. ¿Qué tensión lleva cada cable?`,a:T,u:'kN',s:`T = W / (2 sen ${a}°) = ${W} / (2 · ${fmt(Math.sin(rad(a)),4)}) = ${fmt(T)} kN`};},
+  'Momento de una fuerza':()=>{const F=pick([2,3,4,5]),x=pick([0.8,1.2,1.5,2]),t=pick([30,45,60,75]);const M=F*x*Math.sin(rad(t));return {q:`Una fuerza de ${F} kN actúa a ${fmt(x,1)} m del pivote formando ${t}° con la barra. ¿Cuál es la magnitud del momento?`,a:M,u:'kN·m',s:`M = F · x · sen θ = ${F} · ${fmt(x,1)} · ${fmt(Math.sin(rad(t)),4)} = ${fmt(M,3)} kN·m`};},
+  'Reacciones de una viga':()=>{const L=pick([4,5,6,8]),P=pick([10,12,15,20]),a=pick([1,1.5,2]),w=pick([2,3,4]);const RB=(P*a+w*L*L/2)/L,RA=P+w*L-RB;return {q:`Viga simplemente apoyada de ${L} m con P = ${P} kN a ${fmt(a,1)} m de A y w = ${w} kN/m en toda la luz. ¿Cuánto vale R_A?`,a:RA,u:'kN',s:`R_B = (${P}·${fmt(a,1)} + ${w}·${L}·${fmt(L/2,1)}) / ${L} = ${fmt(RB)} kN → R_A = ${P} + ${w*L} − ${fmt(RB)} = ${fmt(RA)} kN`};},
+  'Momento máximo en una viga':()=>{const L=pick([4,5,6,8]),w=pick([5,8,10,12]);return {q:`Una viga simplemente apoyada de ${L} m lleva una carga uniforme de ${w} kN/m. ¿Cuál es el momento máximo?`,a:w*L*L/8,u:'kN·m',s:`Mmáx = w·L²/8 = ${w}·${L*L}/8 = ${fmt(w*L*L/8)} kN·m (en el centro)`};},
+  'Fricción: fuerza para mover':()=>{const W=pick([5,8,10,15]),mu=pick([0.3,0.4,0.5,0.6]),t=pick([0,15,20,30]);const P=mu*W/(Math.cos(rad(t))+mu*Math.sin(rad(t)));return {q:`Un bloque de ${W} kN se jala con un cable a ${t}° sobre la horizontal. Con μs = ${fmt(mu,1)}, ¿qué fuerza inicia el movimiento?`,a:P,u:'kN',s:`P = μs·W / (cos θ + μs·sen θ) = ${fmt(mu,1)}·${W} / (${fmt(Math.cos(rad(t)),4)} + ${fmt(mu,1)}·${fmt(Math.sin(rad(t)),4)}) = ${fmt(P,3)} kN`};},
+  'Centroide de una viga T':()=>{const bf=pick([60,80,100]),tf=pick([8,10,12]),bw=pick([20,25,30]),h=pick([40,50,60]);const A1=bf*tf,y1=h-tf/2,A2=bw*(h-tf),y2=(h-tf)/2,yb=(A1*y1+A2*y2)/(A1+A2);return {q:`Viga T con ala de ${bf} × ${tf} cm, alma de ${bw} cm de ancho y altura total de ${h} cm. ¿A qué altura está el centroide, medida desde la base?`,a:yb,u:'cm',s:`Ala: A = ${A1} cm², y = ${fmt(y1,1)}; alma: A = ${A2} cm², y = ${fmt(y2,1)} → ȳ = ${fmt(A1*y1+A2*y2,0)} / ${A1+A2} = ${fmt(yb,2)} cm`};}
+};
+let cur=null,tries=0,hits=0,done=0;
+Object.keys(Q).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;$('qTopic').appendChild(o);});
+function newQ(){cur=Q[$('qTopic').value]();tries=0;$('qText').textContent=cur.q;$('qUnit').textContent='Respuesta ('+cur.u+')';$('qIn').value='';$('qFb').innerHTML='';}
+$('qTopic').addEventListener('change',newQ);$('qNew').addEventListener('click',newQ);
+$('qForm').addEventListener('submit',e=>{e.preventDefault();const v=parseFloat(String($('qIn').value).replace(/\s/g,'').replace(',','.'));
+  if(isNaN(v)){$('qFb').innerHTML='<span class="no">Escribe un número, por ejemplo 12,5.</span>';return;}
+  if(Math.abs(v-cur.a)<=Math.max(0.01,Math.abs(cur.a)*0.01)){hits++;done++;$('qFb').innerHTML=`<span class="good">Correcto.</span> ${cur.s}`;}
+  else{tries++;if(tries>=2){done++;$('qFb').innerHTML=`<span class="no">No coincide.</span> Solución: ${cur.s}`;}else $('qFb').innerHTML='<span class="no">Aún no es correcto.</span> Revisa unidades, signos y que la calculadora esté en grados.';}
+  $('qScore').textContent=`Aciertos en esta sesión: ${hits} de ${done}`;});
+
+/* ===== verificación ===== */
+(function(){
+  const rows=[],add=(n,ref,val,u)=>rows.push({n,ref,val,u,err:Math.abs(val-ref)});
+  let r=beamSolve({L:6,type:'ss',loads:[{t:'P',x:3,P:12}]});add('Viga 6 m, P = 12 kN al centro · M máx = P·L/4',18,r.Mmax,'kN·m');
+  r=beamSolve({L:6,type:'ss',loads:[{t:'w',x1:0,x2:6,w:8}]});add('Viga 6 m, w = 8 kN/m · R_A = w·L/2',24,r.Ra,'kN');add('Viga 6 m, w = 8 kN/m · M máx = w·L²/8',36,r.Mmax,'kN·m');
+  r=beamSolve({L:6,type:'ss',loads:[{t:'P',x:2,P:15}]});add('Viga 6 m, P = 15 kN a 2 m · M máx = P·a·b/L',20,r.Mmax,'kN·m');
+  r=beamSolve({L:2,type:'cant',loads:[{t:'P',x:2,P:5}]});add('Voladizo 2 m, P = 5 kN en la punta · M_A = P·L',10,r.MA,'kN·m');
+  r=beamSolve({L:3,type:'cant',loads:[{t:'w',x1:0,x2:3,w:2}]});add('Voladizo 3 m, w = 2 kN/m · M_A = w·L²/2',9,r.MA,'kN·m');
+  const g=trussGeom('warren',12,3,3),ld=g.nodes.map(()=>[0,0]);ld[1][1]=-20;ld[2][1]=-10;const s=solveTruss(g,ld);
+  const f=(a,b)=>s.F[g.bars.findIndex(q=>(q[0]===a&&q[1]===b)||(q[0]===b&&q[1]===a))],Dy=(20*4+10*8)/12,Ay=30-Dy,sn=3/Math.sqrt(13);
+  add('Cercha Warren 12 m (20 y 10 kN) · EF por secciones',-4*Ay/3,f(4,5),'kN');add('Cercha Warren 12 m · BC por secciones',(6*Ay-2*20)/3,f(1,2),'kN');add('Cercha Warren 12 m · BF por secciones',(20-Ay)/sn,f(1,5),'kN');
+  const g2=trussGeom('pratt',12,6,3),s2=solveTruss(g2,deckLoads(g2,10,0,1));add('Cercha Pratt 12 m, w = 10 kN/m · R_A = w·L/2',60,s2.Ay,'kN');
+  const g3=trussGeom('howe',12,6,3),s3=solveTruss(g3,deckLoads(g3,10,0,1));add('Cercha Howe 12 m, w = 10 kN/m · cordón inferior central = (w·L²/8)/h',(10*144/8)/3,s3.F[g3.bars.findIndex(q=>q[0]===2&&q[1]===3)],'kN');
+  const ok=rows.every(x=>x.err<1e-8);
+  $('vTab').innerHTML='<tr><th>Caso</th><th>Prototipo</th><th>Analítico</th><th>Error</th></tr>'+rows.map(x=>`<tr><td>${x.n}</td><td>${sgn(x.val,4)} ${x.u}</td><td>${sgn(x.ref,4)} ${x.u}</td><td>${x.err<1e-10?'&lt; 10⁻¹⁰':x.err.toExponential(1)}</td></tr>`).join('');
+  $('vMsg').innerHTML=ok?`<span class="pill ok">${rows.length} de ${rows.length} casos coinciden</span> con error menor a 10⁻⁸.`:`<span class="pill bad">Hay diferencias</span> Revisar el motor de cálculo.`;
+})();
+
+/* ===== barra, tema y proyector ===== */
+const secs=['u1','u2','u3','u4','u5','u6','u7','u8','u9','u10','u11','u12','banco','verif'];
+$('nav').innerHTML=secs.map(id=>`<a href="#${id}" data-id="${id}">${id.startsWith('u')?id.slice(1).padStart(2,'0'):id==='banco'?'✎':'✓'}</a>`).join('');
+if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){$('nav').querySelectorAll('a').forEach(a=>a.classList.toggle('on',a.dataset.id===e.target.id));const on=$('nav').querySelector('a.on');if(on&&on.scrollIntoView)on.scrollIntoView({block:'nearest',inline:'nearest'});}});},{rootMargin:'-45% 0px -50% 0px'});secs.forEach(id=>io.observe($(id)));}
+const modes=['auto','light','dark'],names={auto:'Tema: auto',light:'Tema: claro',dark:'Tema: oscuro'};let mode='auto';try{mode=localStorage.getItem('estatica-curso-tema')||'auto';}catch(e){}
+const applyT=()=>{if(mode==='auto')document.documentElement.removeAttribute('data-theme');else document.documentElement.setAttribute('data-theme',mode);$('themeBtn').textContent=names[mode];};
+$('themeBtn').addEventListener('click',()=>{mode=modes[(modes.indexOf(mode)+1)%3];try{localStorage.setItem('estatica-curso-tema',mode);}catch(e){}applyT();});applyT();
+$('projBtn').addEventListener('click',()=>{const on=!document.body.classList.contains('proj');document.body.classList.toggle('proj',on);$('projBtn').setAttribute('aria-pressed',String(on));});
+
+fillUnits('longitud','pulgada (in)','mm');
+drawTug();conv();drawVec();drawComp();draw3d();drawNudo();drawMom();drawDist();drawBeam();drawTruss();drawFr();drawSec();drawLift();newQ();
+})();
+</script>
+</body>
+</html>
