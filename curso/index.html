@@ -87,9 +87,10 @@ a{color:var(--accent)}
 .rotulo .v{font-family:var(--mono);font-size:13px;overflow-wrap:anywhere}
 .rotulo .v.t{font-family:var(--display);font-size:20px;font-weight:700;text-transform:uppercase}
 
-.intro{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;padding-bottom:28px}
+.intro{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;padding-bottom:28px}
 @media (max-width:860px){.intro{grid-template-columns:minmax(0,1fr)}}
-.toc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.toc{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:960px){.toc{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:600px){.toc{grid-template-columns:minmax(0,1fr)}}
 .part{background:var(--panel);border:1px solid var(--line);padding:12px 14px}
 .part h3{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:6px}
@@ -305,13 +306,6 @@ table.t tr.sum td{color:var(--pc,var(--accent))}
       <li><a href="#u12"><b>12</b><span>Caso integrador: izaje de una viga</span></a></li>
       <li><a href="#banco"><b>✎</b><span>Banco de ejercicios</span></a></li>
       <li><a href="#verif"><b>✓</b><span>Verificación del motor de cálculo</span></a></li></ol></div>
-  </div>
-  <div class="panel stack">
-    <h3>Cómo usar este prototipo</h3>
-    <p style="font-size:15px"><b>En clase:</b> el docente proyecta la unidad (botón <i>Modo proyector</i>), plantea la situación y pide a los estudiantes que predigan el resultado antes de mover el control.</p>
-    <p style="font-size:15px"><b>Fuera de clase:</b> el estudiante resuelve en el cuaderno el ejemplo de cada unidad y lo comprueba con el laboratorio. El banco de ejercicios genera problemas nuevos con verificación.</p>
-    <p style="font-size:15px"><b>En Python:</b> todas las unidades están también en un cuaderno de Google Colab con el código comentado. <a href="https://colab.research.google.com/github/jerson0915/estatica-obra/blob/main/colab/estatica_obras_civiles.ipynb" target="_blank" rel="noopener">Abrir el cuaderno en Colab</a>.</p>
-    <p style="font-size:15px"><b>Convenciones:</b> derecha y arriba positivos; momento antihorario positivo; tensión positiva y compresión negativa; coma decimal.</p>
   </div>
 </div>
 
