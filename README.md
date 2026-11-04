@@ -15,6 +15,12 @@ Al final hay ejercicios de práctica con su respuesta.
 
 Simulador de estudio: los valores de obra son de referencia para aprender; en una obra real manda el diseño del ingeniero.
 
+## Estática didáctica
+
+Versión ampliada con simulación 3D, cálculo paso a paso, caso integrador y laboratorio de vigas y cerchas, preparada como trabajo de grado.
+
+🔗 **Ver Estática didáctica:** https://jerson0915.github.io/estatica-obra/didactica/
+
 ---
 
 Proyecto de Jerson Sinisterra.
