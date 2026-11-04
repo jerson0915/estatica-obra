@@ -19,7 +19,7 @@
 /* Layout: cuaderno de obra cuadriculado. Una sola ruta de 12 unidades agrupadas en 4 partes; cada unidad = objetivo,
    teoría con fórmulas, laboratorio (dibujo + controles + memoria de cálculo), error frecuente y nota "en la obra". */
 :root{
-  --paper:#eef2f4; --panel:#ffffff; --ink:#15212b; --muted:#5a6873; --line:#c6d0d7; --grid:#dfe6ea;
+  --paper:#f4f8fc; --panel:#ffffff; --ink:#15212b; --muted:#56677a; --line:#c9d6e3; --grid:#dde8f4; --grid2:#c3d6ea;
   --accent:#d9590b; --accent-soft:#fbe6d6; --concrete:#cdd5db; --steel:#8fa3b0;
   --f1:#1f5fa8; --f2:#0f7f73; --f3:#8a4fb3; --ok:#2e7d4f; --warn:#a86b0c; --bad:#bf3326;
   --tens:#c0262d; --comp:#1d5fd1;
@@ -30,12 +30,12 @@
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --paper:#0f151a; --panel:#161f26; --ink:#e4ebf0; --muted:#93a2ad; --line:#2d3a44; --grid:#1c262e;
+  --paper:#0b1320; --panel:#121c2b; --ink:#e6edf5; --muted:#93a4b8; --line:#273850; --grid:#152236; --grid2:#1e3150;
   --accent:#ff8a3d; --accent-soft:#3a2416; --concrete:#3a4750; --steel:#5d7280;
   --f1:#6ea9f0; --f2:#4fcfbe; --f3:#c39ae8; --ok:#5cc58a; --warn:#e2b456; --bad:#f07264;
   --tens:#f47b7b; --comp:#6ea6f7; --p1:#6aa6ff; --p2:#34d3bd; --p3:#ff9a52; --p4:#c690ff; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --paper:#0f151a; --panel:#161f26; --ink:#e4ebf0; --muted:#93a2ad; --line:#2d3a44; --grid:#1c262e;
+  --paper:#0b1320; --panel:#121c2b; --ink:#e6edf5; --muted:#93a4b8; --line:#273850; --grid:#152236; --grid2:#1e3150;
   --accent:#ff8a3d; --accent-soft:#3a2416; --concrete:#3a4750; --steel:#5d7280;
   --f1:#6ea9f0; --f2:#4fcfbe; --f3:#c39ae8; --ok:#5cc58a; --warn:#e2b456; --bad:#f07264;
   --tens:#f47b7b; --comp:#6ea6f7; --p1:#6aa6ff; --p2:#34d3bd; --p3:#ff9a52; --p4:#c690ff; color-scheme:dark}
@@ -43,8 +43,8 @@
 *{box-sizing:border-box}
 html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 60px)}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
-  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
-  background-size:24px 24px;
+  background-image:linear-gradient(var(--grid2) 1px,transparent 1px),linear-gradient(90deg,var(--grid2) 1px,transparent 1px),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:120px 120px,120px 120px,24px 24px,24px 24px;background-attachment:fixed;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
 body.proj main,body.proj .bar{zoom:1.22}
@@ -310,6 +310,7 @@ table.t tr.sum td{color:var(--pc,var(--accent))}
     <h3>Cómo usar este prototipo</h3>
     <p style="font-size:15px"><b>En clase:</b> el docente proyecta la unidad (botón <i>Modo proyector</i>), plantea la situación y pide a los estudiantes que predigan el resultado antes de mover el control.</p>
     <p style="font-size:15px"><b>Fuera de clase:</b> el estudiante resuelve en el cuaderno el ejemplo de cada unidad y lo comprueba con el laboratorio. El banco de ejercicios genera problemas nuevos con verificación.</p>
+    <p style="font-size:15px"><b>En Python:</b> todas las unidades están también en un cuaderno de Google Colab con el código comentado. <a href="https://colab.research.google.com/github/jerson0915/estatica-obra/blob/main/colab/estatica_obras_civiles.ipynb" target="_blank" rel="noopener">Abrir el cuaderno en Colab</a>.</p>
     <p style="font-size:15px"><b>Convenciones:</b> derecha y arriba positivos; momento antihorario positivo; tensión positiva y compresión negativa; coma decimal.</p>
   </div>
 </div>

@@ -21,6 +21,12 @@ Doce unidades (vectores 2D y 3D, equilibrio, momento, cuerpo rígido, armaduras,
 
 🔗 **Ver el prototipo:** https://jerson0915.github.io/estatica-obra/curso/
 
+## Cuaderno de Google Colab
+
+Las 12 unidades del curso en Python, con explicación de cada sección, código comentado, gráficas, controles interactivos y verificación contra fórmulas analíticas.
+
+🔗 **Abrir en Colab:** https://colab.research.google.com/github/jerson0915/estatica-obra/blob/main/colab/estatica_obras_civiles.ipynb
+
 ## Estática didáctica
 
 Versión ampliada con simulación 3D, cálculo paso a paso, caso integrador y laboratorio de vigas y cerchas, preparada como trabajo de grado.
